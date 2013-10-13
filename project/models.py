@@ -48,7 +48,7 @@ class Buddy(Model):
     #since = DateField(verbose_name='Member Since') # obsolete? - query BuddyEvents
     #until = DateField(verbose_name='Member Until') # obsolete? - query BuddyEvents
     comment = TextField(max_length=1000, verbose_name='Comment' )
-    attachment = ManyToManyField(Attachment)
+    attachments = ManyToManyField(Attachment)
     # term_reason = TextField(max_length=1000, verbose_name='Termination Reason' ) # obsolete? - query BuddyEvents.reason
     def __unicode__(self):
         template = u'@%s (%s %s %s)' if self.type.is_member else u' %s'
@@ -74,7 +74,7 @@ class BuddyEvent(Model):
     date = DateField(verbose_name='Event Start')
     duration = IntegerField(verbose_name='Duration of Event') # e.g. for discount otherwise null
     reason = TextField(max_length=1000, verbose_name='Reason' )
-    attachment = ManyToManyField(Attachment)
+    attachments = ManyToManyField(Attachment)
     def __unicode__(self):
         template = u'%s -> %s'
         return template % (self.buddy, self.type)
