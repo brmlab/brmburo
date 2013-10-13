@@ -14,6 +14,7 @@ class SiteResource(Model): # some resource strings
 
 class BuddyType(Model): # friend, member, terminated, suspended ...
     name = CharField(max_length=100, verbose_name='Buddy Type Name')
+    symbol = CharField(max_length=10)
     is_member = BooleanField(verbose_name='Is Member?')
     def __unicode__(self):
         template = u'%s'
@@ -21,7 +22,6 @@ class BuddyType(Model): # friend, member, terminated, suspended ...
     class Meta:
         ordering = [ "-is_member", "name" ]
         verbose_name = "Buddy Type"
-
 
 class Attachment(Model):
     name = CharField(max_length=100, verbose_name='Attachment Name')
@@ -61,6 +61,7 @@ class Buddy(Model):
 
 class BuddyEventType(Model): # start, end, discount, termination, suspend
     name = CharField(max_length=100, verbose_name='Event Type Name')
+    symbol = CharField(max_length=10)
     def __unicode__(self):
         template = u'%s'
         return template % (self.name,)
@@ -73,6 +74,7 @@ class BuddyEvent(Model):
     type = ForeignKey(BuddyEventType)
     date = DateField(verbose_name='Event Start')
     duration = IntegerField(verbose_name='Duration of Event') # e.g. for discount otherwise null
+    value = IntegerField(verbose_name='Integer Value') # e.g. for discount otherwise null
     reason = TextField(max_length=1000, verbose_name='Reason' )
     attachments = ManyToManyField(Attachment)
     def __unicode__(self):
@@ -82,19 +84,27 @@ class BuddyEvent(Model):
         ordering = ["-date", "buddy"]
         verbose_name = "Buddy Event"
 
-class Security(Model): # management of buddy's security aspects - gpg keys, ssh keys, ..
-    buddy = ForeignKey(Buddy)
-    start = DateField(verbose_name='Start of Validity')
-    end = DateField(verbose_name='End of Validity')
-    pgp =  CharField(max_length=100, verbose_name='PGP Key',unique=True )
-    ssh =  CharField(max_length=100, verbose_name='SSH Key',unique=True )
-    has_key = BooleanField(verbose_name='Has Key')
-    has_card = BooleanField(verbose_name='Has Card')
+class PrincipalType(Model): # gpg, ssh, physical key, card ..
+    name = CharField(max_length=100, verbose_name='Key Type Name')
+    symbol = CharField(max_length=10)
     def __unicode__(self):
         template = u'%s'
-        return template % (self.buddy, )
+        return template % (self.name,)
+    class Meta:
+        ordering = [ "name" ]
+        verbose_name = "Key Type"
+
+class SecurityPrincipal(Model): # management of buddy's security principals - gpg keys, ssh keys, crads ..
+    buddy = ForeignKey(Buddy)
+    since = DateField(verbose_name='Start of Validity')
+    until = DateField(verbose_name='End of Validity')
+    type = ForeignKey(PrincipalType)
+    value = TextField(max_length=1000, verbose_name='Key')
+    def __unicode__(self):
+        template = u'%s -> %s'
+        return template % (self.buddy, self.type)
     class Meta:
         ordering = ["-start", "buddy"]
-        verbose_name = "Security Aspect"
+        verbose_name = "Security Principal"
 
 
