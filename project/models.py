@@ -1,6 +1,6 @@
 __author__ = 'pborky'
 
-from django.db.models import Model, CharField, EmailField, IntegerField, BooleanField, DateField, TextField, ForeignKey
+from django.db.models import Model, CharField, EmailField, IntegerField, BooleanField, DateField, TextField, ForeignKey, ManyToManyField, FileField, DateTimeField
 from tinymce.models import HTMLField
 
 class SiteResource(Model): # some resource strings
@@ -36,6 +36,7 @@ class Buddy(Model):
     #since = DateField(verbose_name='Member Since') # obsolete? - query BuddyEvents
     #until = DateField(verbose_name='Member Until') # obsolete? - query BuddyEvents
     comment = TextField(max_length=1000, verbose_name='Comment' )
+    attachment = ManyToManyField(Attachment)
     # term_reason = TextField(max_length=1000, verbose_name='Termination Reason' ) # obsolete? - query BuddyEvents.reason
     def __unicode__(self):
         template = u'@%s (%s %s %s)' if self.type.is_member else u' %s'
@@ -61,12 +62,24 @@ class BuddyEvent(Model):
     date = DateField(verbose_name='Event Start')
     duration = IntegerField(verbose_name='Duration of Event') # e.g. for discount otherwise null
     reason = TextField(max_length=1000, verbose_name='Reason' )
+    attachment = ManyToManyField(Attachment)
     def __unicode__(self):
         template = u'%s -> %s'
         return template % (self.buddy, self.type)
     class Meta:
         ordering = ["-date", "buddy"]
         verbose_name = "Buddy Event"
+
+class Attachment(Model):
+    name = CharField(max_length=100, verbose_name='Attachment Name')
+    date = DateTimeField(verbose_name='Created',auto_now=True)
+    file = FileField(verbose_name='File', upload_to='/dev/null')  # TODO:
+    def __unicode__(self):
+        template = u'%s'
+        return template % (self.name,)
+    class Meta:
+        ordering = ["-date", "name"]
+        verbose_name = "Attachment"
 
 class Security(Model): # management of buddy's security aspects - gpg keys, ssh keys, ..
     buddy = ForeignKey(Buddy)
