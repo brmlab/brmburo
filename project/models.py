@@ -22,6 +22,18 @@ class BuddyType(Model): # friend, member, terminated, suspended ...
         ordering = [ "-is_member", "name" ]
         verbose_name = "Buddy Type"
 
+
+class Attachment(Model):
+    name = CharField(max_length=100, verbose_name='Attachment Name')
+    date = DateTimeField(verbose_name='Created',auto_now=True)
+    file = FileField(verbose_name='File', upload_to='/dev/null')  # TODO:
+    def __unicode__(self):
+        template = u'%s'
+        return template % (self.name,)
+    class Meta:
+        ordering = ["-date", "name"]
+        verbose_name = "Attachment"
+
 class Buddy(Model):
     uid = IntegerField(verbose_name='Unique Prime')
     type = ForeignKey(BuddyType) # friend, member, terminated, suspended
@@ -69,17 +81,6 @@ class BuddyEvent(Model):
     class Meta:
         ordering = ["-date", "buddy"]
         verbose_name = "Buddy Event"
-
-class Attachment(Model):
-    name = CharField(max_length=100, verbose_name='Attachment Name')
-    date = DateTimeField(verbose_name='Created',auto_now=True)
-    file = FileField(verbose_name='File', upload_to='/dev/null')  # TODO:
-    def __unicode__(self):
-        template = u'%s'
-        return template % (self.name,)
-    class Meta:
-        ordering = ["-date", "name"]
-        verbose_name = "Attachment"
 
 class Security(Model): # management of buddy's security aspects - gpg keys, ssh keys, ..
     buddy = ForeignKey(Buddy)
