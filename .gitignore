@@ -1,0 +1,26 @@
+# vitrualenv - specific files
+bin/
+lib/
+local/
+include/
+man/
+share/
+dist/
+build/
+pip-log.txt
+
+
+# IDE specific
+*.iml
+.idea/
+
+# makefile generated
+initenv
+tmp/
+
+# python generated
+*.py[cod]
+*.so
+*.egg
+*.egg-info
+
