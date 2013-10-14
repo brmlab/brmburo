@@ -47,7 +47,7 @@ class Buddy(Model):
     class Meta:
         ordering = ["type", "nickname"]
         verbose_name = "_Buddy"
-        verbose_name_plural = "_Buddies"
+        verbose_name_plural = "+Buddies"
 
 
 class BuddyEventType(Model): # start, end, discount, termination, suspend
@@ -73,7 +73,7 @@ class BuddyEvent(Model):
         return template % (self.buddy, self.type)
     class Meta:
         ordering = ["-date", "buddy"]
-        verbose_name = "_Buddy Event"
+        verbose_name = "+Buddy Event"
 
 class PrincipalType(Model): # gpg, ssh, physical key, card ..
     name = CharField(max_length=100, verbose_name='Principal Type Name')
@@ -99,6 +99,6 @@ class SecurityPrincipal(Model): # management of buddy's security principals - gp
         return template % (self.buddy, self.type)
     class Meta:
         ordering = ["-since", "buddy"]
-        verbose_name = "_Security Principal"
+        verbose_name = "+Security Principal"
 
 
