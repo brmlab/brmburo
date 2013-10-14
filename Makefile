@@ -13,7 +13,7 @@ rmenv: clean
 
 initenv:
 	virtualenv .
-	virtualenv  --relocatable .
+#	virtualenv  --relocatable .
 	mkdir tmp
 	echo '# Environment initialization placeholder. Do not delete. Use "make rmenv" to remove environment.' > $@
 
@@ -63,3 +63,12 @@ update: ensure_virtualenv
 	$(MANAGE) syncdb
 	$(MANAGE) migrate
 	$(MANAGE) collectstatic --noinput
+
+
+migrate-init/%: ensure_virtualenv 
+	$(MANAGE) schemamigration $* --initial
+	$(MANAGE) migrate $* --fake
+
+migrate-update/%: ensure_virtualenv
+	$(MANAGE) schemamigration $*  --auto
+	$(MANAGE) migrate $*
