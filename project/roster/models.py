@@ -6,7 +6,7 @@ from django.utils.datetime_safe import date
 class BuddyType(Model): # friend, member, terminated, suspended ...
     name = CharField(max_length=100, verbose_name='Buddy Type Name')
     symbol = CharField(max_length=10)
-    is_member = BooleanField(verbose_name='Is Member?')
+    is_member = BooleanField(verbose_name='Is Full Member?')
     def __unicode__(self):
         template = u'%s'
         return template % (self.name,)
@@ -46,8 +46,8 @@ class Buddy(Model):
         return template % tuple(map(lambda x: '' if x is None else x, (self.nickname, self.first_name, self.middle_name, self.surname)))
     class Meta:
         ordering = ["type", "nickname"]
-        verbose_name = "Buddy"
-        verbose_name_plural = "Buddies"
+        verbose_name = "_Buddy"
+        verbose_name_plural = "_Buddies"
 
 
 class BuddyEventType(Model): # start, end, discount, termination, suspend
@@ -73,7 +73,7 @@ class BuddyEvent(Model):
         return template % (self.buddy, self.type)
     class Meta:
         ordering = ["-date", "buddy"]
-        verbose_name = "Buddy Event"
+        verbose_name = "_Buddy Event"
 
 class PrincipalType(Model): # gpg, ssh, physical key, card ..
     name = CharField(max_length=100, verbose_name='Principal Type Name')
@@ -99,6 +99,6 @@ class SecurityPrincipal(Model): # management of buddy's security principals - gp
         return template % (self.buddy, self.type)
     class Meta:
         ordering = ["-since", "buddy"]
-        verbose_name = "Security Principal"
+        verbose_name = "_Security Principal"
 
 
