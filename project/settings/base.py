@@ -152,6 +152,7 @@ INSTALLED_APPS = (
     'south',
     'bootstrap_toolkit',
     'project',
+    'project.roster',
 )
 
 BOOTSTRAP_BASE_URL  = STATIC_URL
