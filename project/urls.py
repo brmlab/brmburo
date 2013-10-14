@@ -9,6 +9,7 @@ from .views import login,logout,login,do_login
 
 admin.autodiscover()
 
+autoregister('roster')
 autoregister('project')
 
 urlpatterns = patterns('',
