@@ -2,6 +2,7 @@ __author__ = 'pborky'
 
 from django.db.models import Model, CharField, EmailField, IntegerField, BooleanField, DateField, TextField, ForeignKey, ManyToManyField, FileField, DateTimeField
 from django.utils.datetime_safe import date
+from django.contrib.auth.models import User
 
 class BuddyType(Model): # friend, member, terminated, suspended ...
     name = CharField(max_length=100, verbose_name='Buddy Type Name')
@@ -41,6 +42,7 @@ class Buddy(Model):
     comment = TextField(max_length=1000, verbose_name='Comment', blank=True, null=True )
     attachments = ManyToManyField(Attachment, blank=True, null=True)
     # term_reason = TextField(max_length=1000, verbose_name='Termination Reason' ) # obsolete? - query BuddyEvents.reason
+    user = ForeignKey(User, blank=True, null=True)
     def __unicode__(self):
         template = u'@%s (%s %s %s)' if self.type.is_member else u' %s (%s %s %s)'
         return template % tuple(map(lambda x: '' if x is None else x, (self.nickname, self.first_name, self.middle_name, self.surname)))
