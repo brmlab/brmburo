@@ -1,4 +1,3 @@
-
 MANAGE=python manage.py
 PROJECT_NAME=project
 FLAKE8_OPTS=--exclude=.git,migrations --max-complexity=10
@@ -13,7 +12,8 @@ rmenv: clean
 
 initenv:
 	virtualenv .
-#	virtualenv  --relocatable .
+	virtualenv . --relocatable
+	virtualenv . --system-site-packages
 	mkdir tmp
 	echo '# Environment initialization placeholder. Do not delete. Use "make rmenv" to remove environment.' > $@
 
@@ -36,26 +36,19 @@ lint:  ensure_virtualenv
 clean:
 	find . -name '*.pyc' -exec rm '{}' ';'
 
+reqs/%: ensure_virtualenv
+	pip install  --download-cache=tmp/cache --src=tmp/src -r requirements/$*.txt
 
-reqs/dev: ensure_virtualenv
-	pip install -r requirements/dev.txt
+setup/test: ensure_virtualenv reqs/test
 
-reqs/test: ensure_virtualenv
-	pip install -r requirements/test.txt
-
-reqs/prod: ensure_virtualenv
-	pip install -r requirements/prod.txt
-
-dev-setup: ensure_virtualenv reqs/dev
+setup/dev: ensure_virtualenv reqs/dev
 	if [ ! -f $(PROJECT_NAME)/settings/local.py ]; then \
 		echo 'from .dev import *' > $(PROJECT_NAME)/settings/local.py; \
 	fi
 	$(MANAGE) syncdb --all
 	$(MANAGE) migrate --fake
 
-test-setup: ensure_virtualenv reqs/test
-
-dev-update: ensure_virtualenv reqs/dev
+update/dev: ensure_virtualenv reqs/dev
 	$(MAKE) update
 
 update: ensure_virtualenv
@@ -64,10 +57,9 @@ update: ensure_virtualenv
 	$(MANAGE) migrate
 	$(MANAGE) collectstatic --noinput
 
-
-migrate-init/%: ensure_virtualenv 
+migrate-init/%: ensure_virtualenv
 	$(MANAGE) schemamigration $* --initial
-	$(MANAGE) migrate $* --fake
+	$(MANAGE) migrate $* --fake --delete-ghost-migrations
 
 migrate-update/%: ensure_virtualenv
 	$(MANAGE) schemamigration $*  --auto
