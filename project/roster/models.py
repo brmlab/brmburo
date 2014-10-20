@@ -1,6 +1,6 @@
 __author__ = 'pborky'
 
-from django.db.models import Model, CharField, EmailField, IntegerField, BooleanField, DateField, TextField, ForeignKey, ManyToManyField, FileField, DateTimeField
+from django.db.models import Model, CharField, EmailField, IntegerField, BooleanField, DateField, TextField, ForeignKey, ManyToManyField, FileField, DateTimeField, FloatField
 from django.utils.datetime_safe import date
 from django.contrib.auth.models import User
 
@@ -103,4 +103,48 @@ class SecurityPrincipal(Model): # management of buddy's security principals - gp
         ordering = ["-since", "buddy"]
         verbose_name = "+Security Principal"
 
+
+class Currency(Model):
+    name = CharField(max_length=100, verbose_name='Currency Name')
+    symbol = CharField(max_length=10)
+    def __unicode__(self):
+        template = u'%s'
+        return template % (self.symbol,)
+    class Meta:
+        ordering = [ "name" ]
+        verbose_name = "Currency"
+        verbose_name_plural = "Currencies"
+
+class Account(Model):
+    account_number = CharField(max_length=20, verbose_name='Account Number')
+    bank_code = CharField(max_length=20, verbose_name='Bank Code')
+    account_name  = CharField(max_length=100, verbose_name='Account Name',null=True,blank=True)
+    def __unicode__(self):
+        template = u'%s/%s'
+        return template % (self.account_number,self.bank_code,)
+    class Meta:
+        ordering = [ "bank_code", "account_number" ]
+
+class Transaction(Model):
+    tid = CharField(max_length=100, verbose_name='Transaction ID',unique=True)
+    my_account = ForeignKey(Account,related_name='my')
+    their_account = ForeignKey(Account,related_name='their')
+    amount = FloatField()
+    currency = ForeignKey(Currency)
+    constant_symbol = CharField(max_length=20, verbose_name='Constant Symbol',null=True,blank=True)
+    specific_symbol = CharField(max_length=20, verbose_name='Specific Symbol',null=True,blank=True)
+    variable_symbol = CharField(max_length=20, verbose_name='Variable Symbol',null=True,blank=True)
+    recipient_message  = CharField(max_length=100, verbose_name='Bank Code',null=True,blank=True)
+    comment = CharField(max_length=100, verbose_name='Bank Code',null=True,blank=True)
+    buddy = ForeignKey(Buddy,null=True,blank=True)
+    date = DateField(verbose_name='Transaction Date')
+    def __unicode__(self):
+        template = u'%0.2f %s (%s -> %s)'
+        if self.amount > 0:
+            return template % (self.amount, self.currency, self.their_account, self.my_account)
+        else:
+            return template % (self.amount, self.currency, self.my_account, self.their_account)
+    class Model:
+        ordering = [ "date", "my_account" ]
+        get_latest_by = 'date'
 

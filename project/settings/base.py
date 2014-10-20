@@ -193,5 +193,10 @@ LOGGING = {
             'level': 'ERROR',
             'propagate': True,
         },
+        '__main__': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+            },
     }
 }
