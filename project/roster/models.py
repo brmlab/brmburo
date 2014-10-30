@@ -115,20 +115,20 @@ class Currency(Model):
         verbose_name = "Currency"
         verbose_name_plural = "Currencies"
 
-class Account(Model):
-    account_number = CharField(max_length=20, verbose_name='Account Number')
+class BankAccount(Model):
+    account_number = CharField(max_length=20, verbose_name='Bank Account Number')
     bank_code = CharField(max_length=20, verbose_name='Bank Code')
-    account_name  = CharField(max_length=100, verbose_name='Account Name',null=True,blank=True)
+    account_name  = CharField(max_length=100, verbose_name='Bank Account Name',null=True,blank=True)
     def __unicode__(self):
         template = u'%s/%s'
         return template % (self.account_number,self.bank_code,)
     class Meta:
         ordering = [ "bank_code", "account_number" ]
 
-class Transaction(Model):
-    tid = CharField(max_length=100, verbose_name='Transaction ID',unique=True)
-    my_account = ForeignKey(Account,related_name='my')
-    their_account = ForeignKey(Account,related_name='their')
+class BankTransaction(Model):
+    tid = CharField(max_length=100, verbose_name='Bank Transaction ID',unique=True)
+    my_account = ForeignKey(BankAccount,related_name='my')
+    their_account = ForeignKey(BankAccount,related_name='their')
     amount = FloatField()
     currency = ForeignKey(Currency)
     constant_symbol = CharField(max_length=20, verbose_name='Constant Symbol',null=True,blank=True)
@@ -137,7 +137,7 @@ class Transaction(Model):
     recipient_message  = CharField(max_length=100, verbose_name='Bank Code',null=True,blank=True)
     comment = CharField(max_length=100, verbose_name='Bank Code',null=True,blank=True)
     buddy = ForeignKey(Buddy,null=True,blank=True)
-    date = DateField(verbose_name='Transaction Date')
+    date = DateField(verbose_name='Bank Transaction Date')
     def __unicode__(self):
         template = u'%0.2f %s (%s -> %s)'
         if self.amount > 0:
