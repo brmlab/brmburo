@@ -1,6 +1,6 @@
 __author__ = 'pborky'
 
-from django.db.models import Model, CharField, EmailField, IntegerField, BooleanField, DateField, TextField, ForeignKey, ManyToManyField, FileField, DateTimeField, FloatField
+from django.db.models import Model, CharField, EmailField, IntegerField, BooleanField, DateField, TextField, ForeignKey, ManyToManyField, FileField, DateTimeField, FloatField, DecimalField
 from django.utils.datetime_safe import date
 from django.contrib.auth.models import User
 
@@ -148,3 +148,53 @@ class BankTransaction(Model):
         ordering = [ "date", "my_account" ]
         get_latest_by = 'date'
 
+
+class LogicAccountType(Model): # bank, income, expense, credit
+    name = CharField(max_length=100, verbose_name='Logic Account Type Name')
+    def __unicode__(self):
+        template = u'%s'
+        return template % (self.name,)
+    class Meta:
+        ordering = ["name"]
+        verbose_name = "Logic Account Type"
+
+class LogicAccount(Model):
+    name = CharField(max_length=100, verbose_name='Logic Account Name',null=True,blank=True)
+    currency = ForeignKey(Currency)
+    type = ForeignKey(LogicAccountType)
+    def __unicode__(self):
+        template = u'%s:%s[%s]'
+        return template % (self.type, self.name, self.currency,)
+    class Meta:
+        ordering = [ "type", "name" ]
+
+class LogicTransaction(Model):
+    time = DateTimeField(verbose_name='Time')
+    comment = CharField(max_length=255, verbose_name='Transaction Description',null=True,blank=True)
+    def __unicode__(self):
+        template = u'%0.2f %s'
+        return template % (self.time, self.comment)
+    class Model:
+        ordering = [ "time" ]
+        get_latest_by = 'time'
+
+
+class LogicTransactionSplit(Model):
+    tid = ForeignKey(LogicTransaction)
+    side = IntegerField(choices=((1, 'credit'), (-1, 'debit')), verbose_name='Debit/Credit Flag')
+    account = ForeignKey(LogicAccount)
+    amount = DecimalField(max_digits=8, decimal_places=2)
+    comment = CharField(max_length=255, verbose_name='Transaction Split Description',null=True,blank=True)
+    def __unicode__(self):
+        template = u'%s %s %.2f (%s)'
+        return template % (self.account, self.side, self.amount, self.comment)
+    class Model:
+        ordering = [ "tid", "side", "time" ]
+        get_latest_by = 'tid'
+
+
+# Example - paying dues is a four-split transaction:
+# bank         CREDIT 500
+# pasky        DEBIT  500
+# prepaid_dues CREDIT 500
+# income       DEBIT  500
