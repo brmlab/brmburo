@@ -11,8 +11,8 @@ pip-log.txt
 
 
 # IDE specific
-#*.iml
-#.idea/
+*.iml
+.idea/
 
 # makefile generated
 initenv
