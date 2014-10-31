@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block body_class %}{{ block.super }} home{% endblock %}
+
+
+{% block sidebar %}
+{% endblock %}
+
+{% block content %}
+    <table class="table" style="display: table">
+        <tr>
+            <th>uid</th>
+            <th>nick</th>
+            <th>name</th>
+        </tr>
+        {% for user,events,principals in users %}
+            <tr>
+                <td><a href="{% url 'roster_user' user.uid %}">{{ user.uid }}</a></td>
+                <td>{{ user.nickname }}</td>
+                <td>{{ user.first_name }} {{ user.middle_name }} {{ user.surname }}</td>
+            </tr>
+        {% endfor %}
+
+    </table>
+{% endblock %}
+
+{% block javascript %}
+{% endblock  %}
+
+{% block footer %}
+    auto footer
+{% endblock  %}

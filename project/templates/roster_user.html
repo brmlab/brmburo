@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block body_class %}{{ block.super }} home{% endblock %}
+
+
+{% block sidebar %}
+{% endblock %}
+
+{% block content %}
+    <table class="table">
+        <tr><th>UID</th><td>{{ user.uid }}</td></tr>
+        <tr><th>Type</th><td>{{ user.type.name }}</td></tr>
+        <tr><th>Nick</th><td>{{ user.nickname }}</td></tr>
+        <tr><th>Full Name</th><td>{{ user.first_name }} {{ user.middle_name }} {{ user.surname }}</td></tr>
+        <tr><th>Email</th><td>{{ user.email }}</td></tr>
+        <tr><th>Phone</th><td>{{ user.phone }}</td></tr>
+        <tr><th>Born</th><td>{{ user.born|date:"Y" }}</td></tr>
+        <tr><th>IRL</th><td>{{ user.irl }}</td></tr>
+        <tr><th>Comment</th><td>{{ user.comment }}</td></tr>
+        {% for principal in principals %}
+            <tr><th>{{ principal.type.name }} {{ principal.name }}</th><td>{{ principal.value }}</td></tr>
+
+        {% endfor %}
+        <tr><th>Events</th><td>
+            {% for event in events %}
+                {{ event.date|date:'Y-m-d' }}: <i>{{ event.type.name }}</i> {% if event.reason %} {{ event.reason }} {% endif %}
+                <br/>
+            {% endfor %}
+        </td></tr>
+    </table>
+{% endblock %}
+
+{% block javascript %}
+{% endblock  %}
+
+{% block footer %}
+    auto footer
+{% endblock  %}
