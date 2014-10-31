@@ -58,3 +58,23 @@ def logout(request, forms):
     from django.contrib.auth import logout
     logout(request)
     messages.success(request, 'User deauthentication successful.')
+
+@view_GET( r'^roster$', template = 'roster.html')
+def roster(request, **kw):
+    from roster.models import Buddy,BuddyEvent,SecurityPrincipal
+
+    return {
+        'users':
+            ((buddy,BuddyEvent.objects.filter(buddy=buddy),SecurityPrincipal.objects.filter(buddy=buddy))
+                for buddy in Buddy.objects.all().order_by('nickname')),
+    }
+
+@view_GET( r'^roster/user/(?P<uid>[0-9]*)$', template = 'roster_user.html')
+def roster_user(request, uid, **kw):
+    from roster.models import Buddy,BuddyEvent,SecurityPrincipal
+    buddy = Buddy.objects.get(uid=int(uid))
+    return {
+        'user': buddy,
+        'events': BuddyEvent.objects.filter(buddy=buddy).order_by('date'),
+        'principals': SecurityPrincipal.objects.filter(buddy=buddy).order_by('since'),
+    }
