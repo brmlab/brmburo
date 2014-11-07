@@ -18,9 +18,13 @@ logger = logging.getLogger(__name__)
 for token in settings.BANK_TOKENS:
     client = FioBank(token=token)
     info = client.info()
-    my,created = BankAccount.objects.get_or_create(account_number=info['account_number'], bank_code=info['bank_code'])
+    curr,created = Currency.objects.get_or_create(symbol=info.get('currency'))
     if created:
-        my.save()
+        curr.name = curr.symbol
+        curr.save()
+    my,created = BankAccount.objects.get_or_create(account_number=info['account_number'], bank_code=info['bank_code'])
+    my.currency = curr
+    my.save()
     logger.info('Processing account %s...' % my)
     try:
         from_id = BankTransaction.objects.filter(my_account=my).latest('date').tid
@@ -63,9 +67,6 @@ for token in settings.BANK_TOKENS:
             date = tran.get('date'),
         )
 
-        buddy=Buddy.objects.filter(uid=t.variable_symbol)
-        if buddy.exists():
-            t.buddy = buddy[0]
 
         t.save()
         logger.info('Imported transaction %s.' % t)
