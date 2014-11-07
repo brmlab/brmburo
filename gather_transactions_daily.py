@@ -22,8 +22,7 @@ for token in settings.BANK_TOKENS:
     if created:
         curr.name = curr.symbol
         curr.save()
-    my,created = BankAccount.objects.get_or_create(account_number=info['account_number'], bank_code=info['bank_code'])
-    my.currency = curr
+    my,created = BankAccount.objects.get_or_create(account_number=info['account_number'], bank_code=info['bank_code'], currency = curr)
     my.save()
     logger.info('Processing account %s...' % my)
     try:

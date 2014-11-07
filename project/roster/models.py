@@ -119,10 +119,10 @@ class BankAccount(Model):
     account_number = CharField(max_length=20, verbose_name='Bank Account Number')
     bank_code = CharField(max_length=20, verbose_name='Bank Code')
     account_name  = CharField(max_length=100, verbose_name='Bank Account Name',null=True,blank=True)
-    currency = ForeignKey(Currency)
+    currency = ForeignKey(Currency, null=True, blank=True)
     def __unicode__(self):
         template = u'%s/%s[%s]'
-        return template % (self.account_number,self.bank_code,self.currency,)
+        return template % (self.account_number,self.bank_code,self.currency or '',)
     class Meta:
         ordering = [ "bank_code", "account_number" ]
 
