@@ -54,7 +54,7 @@ for token in settings.BANK_TOKENS:
             curr.name = curr.symbol
             curr.save()
 
-        todecimal = lambda x: Decimal(x) if x is not None else x
+        todecimal = lambda x: Decimal(str(x)) if x is not None else x
 
         t = BankTransaction.objects.create(
             tid = tran.get('transaction_id'),
