@@ -1,6 +1,15 @@
 Django boilerplate
 ==================
 
+INSTALL
+-------
+ * <pre>apt-get install postgresql python-virtualenv python-crypto ipython python-sqlite python-psycopg2</pre>
+ * <pre>git clone <this repo> </pre>
+ * <pre>make initenv</pre>
+ * <pre>source bin/activate</pre>
+ * <pre>make reqs/[dev|test|prod]</pre>
+
+
 
 TODO
 ----
