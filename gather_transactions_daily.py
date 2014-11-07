@@ -6,6 +6,8 @@ from project import settings
 from fiobank import FioBank
 from django.core.exceptions import ObjectDoesNotExist
 
+from decimal import Decimal
+
 from time import sleep
 import datetime
 import logging
@@ -52,11 +54,13 @@ for token in settings.BANK_TOKENS:
             curr.name = curr.symbol
             curr.save()
 
+        todecimal = lambda x: Decimal(x) if x is not None else x
+
         t = BankTransaction.objects.create(
             tid = tran.get('transaction_id'),
             my_account = my,
             their_account = acc,
-            amount = tran.get('amount'),
+            amount = todecimal(tran.get('amount')),
             currency = curr,
             constant_symbol = tran.get('constant_symbol'),
             specific_symbol = tran.get('specific_symbol'),
