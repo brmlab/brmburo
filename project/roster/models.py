@@ -196,6 +196,14 @@ class LogicTransactionSplit(Model):
 
 # Example - paying dues is a four-split transaction:
 # bank         CREDIT 500
-# pasky        DEBIT  500
+# pasky        DEBIT  500   (pasky's balance is debite when he pays since brmlab owes him money)
 # prepaid_dues CREDIT 500
-# income       DEBIT  500
+# income       DEBIT  500   (income is a debit account because magic)
+# (we throw it into income immediately so that we can do stuff with
+# the prepaid money, like giving them away in grants; but if
+# prepaid_dues >= income (modulo credit/debit sign), we are of course
+# in trouble)
+#
+# Accounting dues (at the 10th day of the month) is a transaction:
+# pasky        CREDIT 500   (if pasky's balance ends up positive, he owes us money)
+# prepaid_dues DEBIT  500   (if members globally don't pay their dues, this account could get negative)
