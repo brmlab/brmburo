@@ -4,7 +4,7 @@ Django boilerplate
 INSTALL
 -------
  * install distribuiton dependencies
-  <pre>apt-get install postgresql python-virtualenv python-crypto ipython python-sqlite python-psycopg2</pre>
+  <pre>apt-get install postgresql python-virtualenv python-crypto ipython python-sqlite python-psycopg2 python-yaml</pre>
  * clone this repository and set up dependencies
   <pre>git clone <this repo> </pre>
   <pre>make initenv</pre>

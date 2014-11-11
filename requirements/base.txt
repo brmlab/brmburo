@@ -5,3 +5,4 @@ django-bootstrap-toolkit==2.13.4
 django-tinymce==1.5.1
 fiobank
 psycopg2
+PyYAML
