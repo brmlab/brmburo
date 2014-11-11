@@ -117,6 +117,7 @@ class Currency(Model):
 class LogicAccountType(Model): # bank, income, expense, credit
     name = CharField(max_length=100, verbose_name='Logic Account Type Name')
     symbol = CharField(max_length=10)
+    parent = ForeignKey('LogicAccountType', blank=True, null=True)
     def __unicode__(self):
         template = u'%s'
         return template % (self.symbol,)
