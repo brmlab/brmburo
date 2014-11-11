@@ -1,0 +1,69 @@
+## BuddyTyoe
+- fields: {is_member: true, name: Member, symbol: member}
+  model: roster.buddytype
+  pk: 1
+- fields: {is_member: false, name: Terminated, symbol: terminated}
+  model: roster.buddytype
+  pk: 2
+- fields: {is_member: false, name: Suspended, symbol: suspended}
+  model: roster.buddytype
+  pk: 3
+- fields: {is_member: false, name: Friend, symbol: friend}
+  model: roster.buddytype
+  pk: 4
+
+## BuddyEventType
+- fields: {name: Start, symbol: start}
+  model: roster.buddyeventtype
+  pk: 1
+- fields: {name: Discount, symbol: discount}
+  model: roster.buddyeventtype
+  pk: 2
+- fields: {name: Terminate, symbol: terminate}
+  model: roster.buddyeventtype
+  pk: 3
+- fields: {name: Suspend, symbol: suspend}
+  model: roster.buddyeventtype
+  pk: 4
+- fields: {name: Payed Until, symbol: payed}
+  model: roster.buddyeventtype
+  pk: 5
+
+## PrincipalType
+- fields: {name: GPG, symbol: gpg}
+  model: roster.principaltype
+  pk: 1
+- fields: {name: SSH, symbol: ssh}
+  model: roster.principaltype
+  pk: 2
+- fields: {name: Physical key, symbol: key}
+  model: roster.principaltype
+  pk: 3
+- fields: {name: Card, symbol: card}
+  model: roster.principaltype
+  pk: 4
+
+## Currency
+- fields: {name: Koruna ceska, symbol: CZK}
+  model: roster.currency
+  pk: 1
+- fields: {name: Euro, symbol: EUR}
+  model: roster.currency
+  pk: 2
+- fields: {name: U.S. Dollar, symbol: USD}
+  model: roster.currency
+  pk: 3
+
+## LogicAccountType  # bank, income, expense, credit
+- fields: {name: Bank, symbol: bank}
+  model: roster.logicaccounttype
+  pk: 1
+- fields: {name: Income, symbol: income}
+  model: roster.logicaccounttype
+  pk: 2
+- fields: {name: Expense, symbol: expense}
+  model: roster.logicaccounttype
+  pk: 3
+- fields: {name: Credit, symbol: credit}
+  model: roster.logicaccounttype
+  pk: 4
