@@ -103,7 +103,6 @@ class SecurityPrincipal(Model): # management of buddy's security principals - gp
         ordering = ["-since", "buddy"]
         verbose_name = "+Security Principal"
 
-
 class Currency(Model):
     name = CharField(max_length=100, verbose_name='Currency Name')
     symbol = CharField(max_length=10)
@@ -115,46 +114,12 @@ class Currency(Model):
         verbose_name = "Currency"
         verbose_name_plural = "Currencies"
 
-class BankAccount(Model):
-    account_number = CharField(max_length=20, verbose_name='Bank Account Number')
-    bank_code = CharField(max_length=20, verbose_name='Bank Code')
-    account_name  = CharField(max_length=100, verbose_name='Bank Account Name',null=True,blank=True)
-    currency = ForeignKey(Currency, null=True, blank=True)
-    def __unicode__(self):
-        template = u'%s/%s[%s]'
-        return template % (self.account_number,self.bank_code,self.currency or '',)
-    class Meta:
-        ordering = [ "bank_code", "account_number" ]
-
-class BankTransaction(Model):
-    tid = CharField(max_length=100, verbose_name='Bank Transaction ID',unique=True)
-    my_account = ForeignKey(BankAccount,related_name='my')
-    their_account = ForeignKey(BankAccount,related_name='their')
-    amount = DecimalField(max_digits=8, decimal_places=2)
-    currency = ForeignKey(Currency)
-    constant_symbol = CharField(max_length=20, verbose_name='Constant Symbol',null=True,blank=True)
-    specific_symbol = CharField(max_length=20, verbose_name='Specific Symbol',null=True,blank=True)
-    variable_symbol = CharField(max_length=20, verbose_name='Variable Symbol',null=True,blank=True)
-    recipient_message  = CharField(max_length=100, verbose_name='Bank Code',null=True,blank=True)
-    comment = CharField(max_length=100, verbose_name='Bank Code',null=True,blank=True)
-    #buddy = ForeignKey(Buddy,null=True,blank=True)
-    date = DateField(verbose_name='Bank Transaction Date')
-    def __unicode__(self):
-        if self.amount >= 0:
-            template = u'%0.2f %s (%s -> %s)'
-        else:
-            template = u'%0.2f %s (%s <- %s)'
-        return template % (self.amount, self.currency, self.their_account, self.my_account)
-    class Model:
-        ordering = [ "date", "my_account" ]
-        get_latest_by = 'date'
-
-
 class LogicAccountType(Model): # bank, income, expense, credit
     name = CharField(max_length=100, verbose_name='Logic Account Type Name')
+    symbol = CharField(max_length=10)
     def __unicode__(self):
         template = u'%s'
-        return template % (self.name,)
+        return template % (self.symbol,)
     class Meta:
         ordering = ["name"]
         verbose_name = "Logic Account Type"
@@ -181,7 +146,7 @@ class LogicTransaction(Model):
 
 
 class LogicTransactionSplit(Model):
-    tid = ForeignKey(LogicTransaction)
+    transaction = ForeignKey(LogicTransaction)
     side = IntegerField(choices=((1, 'credit'), (-1, 'debit')), verbose_name='Debit/Credit Flag')
     account = ForeignKey(LogicAccount)
     amount = DecimalField(max_digits=8, decimal_places=2)
@@ -193,6 +158,42 @@ class LogicTransactionSplit(Model):
         ordering = [ "tid", "side", "time" ]
         get_latest_by = 'tid'
 
+
+class BankAccount(Model):
+    account_number = CharField(max_length=20, verbose_name='Bank Account Number')
+    bank_code = CharField(max_length=20, verbose_name='Bank Code')
+    account_name  = CharField(max_length=100, verbose_name='Bank Account Name',null=True,blank=True)
+    currency = ForeignKey(Currency, null=True, blank=True)
+    logic_account = ForeignKey(LogicAccount, null=True, blank=True)
+    def __unicode__(self):
+        template = u'%s/%s[%s]'
+        return template % (self.account_number,self.bank_code,self.currency or '',)
+    class Meta:
+        ordering = [ "bank_code", "account_number" ]
+
+class BankTransaction(Model):
+    tid = CharField(max_length=100, verbose_name='Bank Transaction ID',unique=True)
+    my_account = ForeignKey(BankAccount,related_name='my')
+    their_account = ForeignKey(BankAccount,related_name='their')
+    amount = DecimalField(max_digits=8, decimal_places=2)
+    currency = ForeignKey(Currency)
+    constant_symbol = CharField(max_length=20, verbose_name='Constant Symbol',null=True,blank=True)
+    specific_symbol = CharField(max_length=20, verbose_name='Specific Symbol',null=True,blank=True)
+    variable_symbol = CharField(max_length=20, verbose_name='Variable Symbol',null=True,blank=True)
+    recipient_message  = CharField(max_length=100, verbose_name='Bank Code',null=True,blank=True)
+    comment = CharField(max_length=100, verbose_name='Bank Code',null=True,blank=True)
+    logic_transaction = ForeignKey(LogicTransaction, null=True, blank=True)
+    #buddy = ForeignKey(Buddy,null=True,blank=True)
+    date = DateField(verbose_name='Bank Transaction Date')
+    def __unicode__(self):
+        if self.amount >= 0:
+            template = u'%0.2f %s (%s -> %s)'
+        else:
+            template = u'%0.2f %s (%s <- %s)'
+        return template % (self.amount, self.currency, self.their_account, self.my_account)
+    class Model:
+        ordering = [ "date", "my_account" ]
+        get_latest_by = 'date'
 
 # Example - paying dues is a four-split transaction:
 # bank         CREDIT 500
