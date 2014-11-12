@@ -140,8 +140,8 @@ class LogicTransaction(Model):
     time = DateTimeField(verbose_name='Time')
     comment = CharField(max_length=255, verbose_name='Transaction Description',null=True,blank=True)
     def __unicode__(self):
-        template = u'%0.2f %s'
-        return template % (self.time, self.comment)
+        template = u'%s:%s'
+        return template % (self.time.strftime('%Y-%m-%d %H:%M'), self.comment)
     class Model:
         ordering = [ "time" ]
         get_latest_by = 'time'
@@ -182,8 +182,8 @@ class BankTransaction(Model):
     constant_symbol = CharField(max_length=20, verbose_name='Constant Symbol',null=True,blank=True)
     specific_symbol = CharField(max_length=20, verbose_name='Specific Symbol',null=True,blank=True)
     variable_symbol = CharField(max_length=20, verbose_name='Variable Symbol',null=True,blank=True)
-    recipient_message  = CharField(max_length=100, verbose_name='Bank Code',null=True,blank=True)
-    comment = CharField(max_length=100, verbose_name='Bank Code',null=True,blank=True)
+    recipient_message  = CharField(max_length=100, verbose_name='Recipient Message',null=True,blank=True)
+    comment = CharField(max_length=100, verbose_name='Comment',null=True,blank=True)
     logic_transaction = ForeignKey(LogicTransaction, null=True, blank=True)
     #buddy = ForeignKey(Buddy,null=True,blank=True)
     date = DateField(verbose_name='Bank Transaction Date')
