@@ -43,6 +43,7 @@ class Buddy(Model):
     attachments = ManyToManyField(Attachment, blank=True, null=True)
     # term_reason = TextField(max_length=1000, verbose_name='Termination Reason' ) # obsolete? - query BuddyEvents.reason
     user = ForeignKey(User, blank=True, null=True)
+    logic_account = ForeignKey('LogicAccount', blank=True, null=True)
     def __unicode__(self):
         template = u'@%s (%s %s %s)' if self.type.is_member else u' %s (%s %s %s)'
         return template % tuple(map(lambda x: '' if x is None else x, (self.nickname, self.first_name, self.middle_name, self.surname)))
@@ -105,7 +106,7 @@ class SecurityPrincipal(Model): # management of buddy's security principals - gp
 
 class Currency(Model):
     name = CharField(max_length=100, verbose_name='Currency Name')
-    symbol = CharField(max_length=10)
+    symbol = CharField(max_length=10, unique=True)
     def __unicode__(self):
         template = u'%s'
         return template % (self.symbol,)
@@ -116,7 +117,7 @@ class Currency(Model):
 
 class LogicAccountType(Model): # bank, income, expense, credit
     name = CharField(max_length=100, verbose_name='Logic Account Type Name')
-    symbol = CharField(max_length=10)
+    symbol = CharField(max_length=10, unique=True)
     parent = ForeignKey('LogicAccountType', blank=True, null=True)
     def __unicode__(self):
         template = u'%s'
@@ -127,6 +128,7 @@ class LogicAccountType(Model): # bank, income, expense, credit
 
 class LogicAccount(Model):
     name = CharField(max_length=100, verbose_name='Logic Account Name',null=True,blank=True)
+    symbol = CharField(max_length=10, unique=True)
     currency = ForeignKey(Currency)
     type = ForeignKey(LogicAccountType)
     def __unicode__(self):
