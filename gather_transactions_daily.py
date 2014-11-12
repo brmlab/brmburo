@@ -1,6 +1,6 @@
-import os
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'project.settings')
+import os; os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'project.settings')
 
+from project.roster.transactions import payment_income
 from project.roster.models import BankTransaction, Currency, BankAccount, Buddy
 from project import settings
 from fiobank import FioBank
@@ -74,6 +74,9 @@ for token in settings.BANK_TOKENS:
 
 
         t.save()
+
+        payment_income(t)
+
         logger.info('Imported transaction %s.' % t)
 
 
