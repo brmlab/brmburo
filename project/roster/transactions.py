@@ -26,12 +26,12 @@ def payment_due(buddy):
     buddy_logic_account = buddy.logic_account
 
     if buddy_logic_account is None:
-        return None
+        return None, None
 
     # if already issued in past 28 days return that transaction
     lts = LogicTransactionSplit.objects.filter(account = buddy_logic_account, transaction__time__gt=time-timedelta(28.), )
     if lts.exists():
-        return lts[0].transaction
+        return lts[0].transaction, buddy
 
     ammount = PAYMENT.get('CZK')
 
@@ -73,7 +73,7 @@ def payment_due(buddy):
 
     logger.info('Payment due for user @%s.'%buddy.nickname)
 
-    return lt
+    return lt, buddy
 
 def payment_income(bank_transaction, buddy=None):
     time = now()
@@ -82,22 +82,22 @@ def payment_income(bank_transaction, buddy=None):
         buddies = Buddy.objects.filter(uid=bank_transaction.variable_symbol)
         # no buddy - no transaction
         if not buddies.exists():
-            return None
+            return None, None
         buddy, = buddies
 
     # if already linked with logic transaction return that one
     if bank_transaction.logic_transaction is not None:
-        return bank_transaction.logic_transaction
+        return bank_transaction.logic_transaction, buddy
 
     # no account - no transaction
     buddy_logic_account = buddy.logic_account
     if buddy_logic_account is None:
-        return None
+        return None, None
 
     # no account - no transaction
     bank_logic_account = bank_transaction.my_account.logic_account
     if bank_logic_account is None:
-        return None
+        return None, None
 
     amount = bank_transaction.amount
 
@@ -143,5 +143,5 @@ def payment_income(bank_transaction, buddy=None):
 
     logger.info('Payment from user @%s.'%buddy.nickname)
 
-    return lt
+    return lt, buddy
 

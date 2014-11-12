@@ -75,7 +75,9 @@ for token in settings.BANK_TOKENS:
 
         t.save()
 
-        payment_income(t)
+        lt, b = payment_income(t)
+        if lt is not None and b is not None:
+            logger.info('Incomming payment from user @%s accounted as transaction %d.' %( b.nickname, lt.id ))
 
         logger.info('Imported transaction %s.' % t)
 
