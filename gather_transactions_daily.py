@@ -24,8 +24,10 @@ for token in settings.BANK_TOKENS:
     if created:
         curr.name = curr.symbol
         curr.save()
-    my,created = BankAccount.objects.get_or_create(account_number=info['account_number'], bank_code=info['bank_code'], currency = curr)
-    my.save()
+    my,created = BankAccount.objects.get_or_create(account_number=info['account_number'], bank_code=info['bank_code'])
+    if created:
+        my.currency = curr
+        my.save()
     logger.info('Processing account %s...' % my)
     try:
         from_id = BankTransaction.objects.filter(my_account=my).latest('date').tid
