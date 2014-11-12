@@ -153,6 +153,7 @@ INSTALLED_APPS = (
     'bootstrap_toolkit',
     'project',
     'project.roster',
+    'project.accounting',
 )
 
 BOOTSTRAP_BASE_URL  = STATIC_URL
