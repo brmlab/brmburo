@@ -57,6 +57,11 @@ update: ensure_virtualenv
 	$(MANAGE) migrate
 	$(MANAGE) collectstatic --noinput
 
+load: load/static load/account load/buddy
+
+load/%:
+	$(MANAGE) loaddata $* 
+
 migrate-init/%: ensure_virtualenv
 	$(MANAGE) schemamigration $* --initial
 	$(MANAGE) migrate $* --fake --delete-ghost-migrations
