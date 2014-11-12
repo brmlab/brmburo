@@ -1,6 +1,10 @@
 from django.utils.timezone import now
 from project.roster.models import LogicAccount, LogicTransaction, LogicTransactionSplit, Buddy, BuddyEvent
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 PREPAID = LogicAccount.objects.get(symbol='prepaid')
 INCOME = LogicAccount.objects.get(symbol='income')
 PAYMENT = dict(
@@ -23,7 +27,7 @@ def payment_due(buddy):
     if la is None:
         return None
 
-    # if already issued in past 28 days return last transaction
+    # if already issued in past 28 days return that transaction
     lts = LogicTransactionSplit.objects.filter(account = la, transaction__time=time-28, )
     if lts.exists():
         return lts[0].transaction
@@ -66,6 +70,8 @@ def payment_due(buddy):
         comment = '',
     ).save() #debit
 
+    logger.info('Payment due for user @%s.'%buddy.nickname)
+
     return lt
 
 def payment_income(bank_transaction, buddy=None):
@@ -107,7 +113,7 @@ def payment_income(bank_transaction, buddy=None):
         side = 1,
         account = bank_logic_account,
         amount = amount,
-        comment = ('%s /// %s' % (bank_transaction.comment, bank_transaction.recipient_message))[:100],
+        comment = (' /// '.join(filter(None,(bank_transaction.comment, bank_transaction.recipient_message))))[:100],
     ).save() #credit
     LogicTransactionSplit(
         transaction = lt,
@@ -133,6 +139,8 @@ def payment_income(bank_transaction, buddy=None):
 
     bank_transaction.logic_transaction = lt
     bank_transaction.save()
+
+    logger.info('Payment from user @%s.'%buddy.nickname)
 
     return lt
 
