@@ -16,18 +16,27 @@
 - fields: {name: Start, symbol: start}
   model: roster.buddyeventtype
   pk: 1
-- fields: {name: Discount, symbol: discount}
-  model: roster.buddyeventtype
-  pk: 2
 - fields: {name: Terminate, symbol: terminate}
   model: roster.buddyeventtype
-  pk: 3
+  pk: 2
 - fields: {name: Suspend, symbol: suspend}
   model: roster.buddyeventtype
+  pk: 3
+- fields: {name: Paid Until, symbol: paid}
+  model: roster.buddyeventtype
   pk: 4
-- fields: {name: Payed Until, symbol: payed}
+- fields: {name: "Discount 25%", symbol: discount25}
   model: roster.buddyeventtype
   pk: 5
+- fields: {name: "Discount 50%", symbol: discount50}
+  model: roster.buddyeventtype
+  pk: 6
+- fields: {name: "Discount 75%", symbol: discount75}
+  model: roster.buddyeventtype
+  pk: 7
+- fields: {name: "Discount 100%", symbol: discount}
+  model: roster.buddyeventtype
+  pk: 8
 
 ## PrincipalType
 - fields: {name: GPG, symbol: gpg}
