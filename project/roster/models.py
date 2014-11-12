@@ -67,8 +67,7 @@ class BuddyEvent(Model):
     buddy = ForeignKey(Buddy)
     type = ForeignKey(BuddyEventType)
     date = DateField(verbose_name='Event Start')
-    duration = IntegerField(verbose_name='Duration of Event', blank=True, null=True) # e.g. for discount otherwise null
-    value = IntegerField(verbose_name='Integer Value', blank=True, null=True) # e.g. for discount otherwise null
+    until = DateField(verbose_name='Event End', blank=True, null=True) # e.g. for discount otherwise null
     reason = TextField(max_length=1000, verbose_name='Reason', blank=True, null=True )
     attachments = ManyToManyField(Attachment, blank=True, null=True)
     def __unicode__(self):
