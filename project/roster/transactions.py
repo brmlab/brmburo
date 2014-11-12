@@ -29,7 +29,7 @@ def payment_due(buddy):
         return None
 
     # if already issued in past 28 days return that transaction
-    lts = LogicTransactionSplit.objects.filter(account = buddy_logic_account, transaction__time=time-timedelta(28.), )
+    lts = LogicTransactionSplit.objects.filter(account = buddy_logic_account, transaction__time__gt=time-timedelta(28.), )
     if lts.exists():
         return lts[0].transaction
 
