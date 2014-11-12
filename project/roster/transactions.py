@@ -1,4 +1,5 @@
 from django.utils.timezone import now
+from datetime import timedelta
 from project.roster.models import LogicAccount, LogicTransaction, LogicTransactionSplit, Buddy, BuddyEvent
 
 import logging
@@ -22,30 +23,30 @@ DISCOUNT_FACTORS = dict(
 def payment_due(buddy):
     time = now()
 
-    la = buddy.logic_account
+    buddy_logic_account = buddy.logic_account
 
-    if la is None:
+    if buddy_logic_account is None:
         return None
 
     # if already issued in past 28 days return that transaction
-    lts = LogicTransactionSplit.objects.filter(account = la, transaction__time=time-28, )
+    lts = LogicTransactionSplit.objects.filter(account = buddy_logic_account, transaction__time=time-timedelta(28.), )
     if lts.exists():
         return lts[0].transaction
+
+    ammount = PAYMENT.get('CZK')
 
     # get valid discount events and calculate discount
     be = BuddyEvent.objects.filter(
         buddy=buddy,
-        date__ge=time,        # valid now
-        until__le=time,
+        date__gte=time,        # valid now
+        until__lte=time,
         until__isnull=False,
-        type__symbol__startswith='discount'
+        type__symbol__startswith='discount',
     )
     if be.exists():
         if be.count() > 1:
             raise Exception('Only one concurent discount is allowed.')
-        ammount = PAYMENT.get('CZK')*DISCOUNT_FACTORS.get(be[0].type.symbol, 1.)
-    else:
-        ammount = PAYMENT
+        ammount *= DISCOUNT_FACTORS.get(be[0].type.symbol, 1.)
 
     # transaction
     lt = LogicTransaction(
@@ -58,7 +59,7 @@ def payment_due(buddy):
     LogicTransactionSplit(
         transaction = lt,
         side = 1,
-        account = la,
+        account = buddy_logic_account,
         amount = ammount,
         comment = '',
     ).save() #credit
