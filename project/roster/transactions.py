@@ -1,17 +1,25 @@
+import logging
+
 from django.utils.timezone import now
+
 from datetime import timedelta
 from project.roster.models import LogicAccount, LogicTransaction, LogicTransactionSplit, Buddy, BuddyEvent
 
-import logging
 
 logger = logging.getLogger(__name__)
 
 PREPAID = LogicAccount.objects.get(symbol='prepaid')
 INCOME = LogicAccount.objects.get(symbol='income')
+CONVERSE = dict(
+    CZK = LogicAccount.objects.get(symbol='czk', type__symbol='converse'),
+    EUR = LogicAccount.objects.get(symbol='eur', type__symbol='converse'),
+    USD = LogicAccount.objects.get(symbol='usd', type__symbol='converse'),
+)
+
 PAYMENT = dict(
-    CZK=500.,
-    EUR=20.,
-    USD=30.,
+    CZK=500,
+    EUR=20,
+    USD=30,
 )
 DISCOUNT_FACTORS = dict(
     discount25=0.75,
@@ -29,7 +37,11 @@ def payment_due(buddy):
         return None, None
 
     # if already issued in past 28 days return that transaction
-    lts = LogicTransactionSplit.objects.filter(account = buddy_logic_account, transaction__time__gt=time-timedelta(28.), )
+    lts = LogicTransactionSplit.objects.filter(
+        account = buddy_logic_account,
+        transaction__time__gt=time-timedelta(28.),
+        side=1,  # credit
+    )
     if lts.exists():
         return lts[0].transaction, buddy
 
@@ -101,6 +113,13 @@ def payment_income(bank_transaction, buddy=None):
 
     amount = bank_transaction.amount
 
+    if bank_transaction.currency.symbol == 'EUR':
+        amount_czk = amount * PAYMENT.get('CZK') / PAYMENT.get('EUR')
+    elif bank_transaction.currency.symbol == 'USD':
+        amount_czk = amount * PAYMENT.get('CZK') / PAYMENT.get('USD')
+    else:
+        amount_czk = amount
+
     # transaction
     lt = LogicTransaction(
         time=bank_transaction.date,
@@ -120,23 +139,51 @@ def payment_income(bank_transaction, buddy=None):
         transaction = lt,
         side = -1,
         account = buddy_logic_account,
-        amount = amount,
+        amount = amount_czk,
         comment = '',
     ).save() #debit
     LogicTransactionSplit(
         transaction = lt,
         side = 1,
         account = PREPAID,
-        amount = amount,
+        amount = amount_czk,
         comment = '',
     ).save() #credit
     LogicTransactionSplit(
         transaction = lt,
         side = -1,
         account = INCOME,
-        amount = amount,
+        amount = amount_czk,
         comment = '',
     ).save() #debit
+
+    # additional splits for foreign currencies
+    if bank_transaction.currency.symbol in ( 'EUR', 'USD', ): # convert to CZK
+        LogicTransactionSplit(
+            transaction = lt,
+            side = 1,
+            account = CONVERSE.get('CZK'),
+            amount = amount_czk,
+            comment = '',
+        ).save() #credit
+
+    if bank_transaction.currency.symbol == 'EUR': # convert from EUR
+        LogicTransactionSplit(
+            transaction = lt,
+            side = -1,
+            account = CONVERSE.get('EUR'),
+            amount = amount,
+            comment = '',
+        ).save() #debit
+
+    if bank_transaction.currency.symbol == 'USD': # convert from USD
+        LogicTransactionSplit(
+            transaction = lt,
+            side = -1,
+            account = CONVERSE.get('USD'),
+            amount = amount,
+            comment = '',
+        ).save() #debit
 
     bank_transaction.logic_transaction = lt
     bank_transaction.save()
@@ -144,4 +191,13 @@ def payment_income(bank_transaction, buddy=None):
     logger.info('Payment from user @%s.'%buddy.nickname)
 
     return lt, buddy
+
+def account_sum(logic_account):
+    if isinstance(logic_account, Buddy):
+        logic_account = logic_account.logic_account
+    lts = LogicTransactionSplit.objects.filter(
+        account=logic_account
+    )
+    return reduce(lambda acc, la: acc+la.side*la.amount, lts, 0)
+
 
