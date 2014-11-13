@@ -4,7 +4,7 @@ from itertools import count
 data =  yaml.load(open('roster.yaml','r'))
 buddies =  filter(lambda o: o.get('model')== 'roster.buddy',data)
 
-seq = count(7)
+seq = count(15)
 
 def buddy2account(buddy):
     fields = buddy.get('fields')

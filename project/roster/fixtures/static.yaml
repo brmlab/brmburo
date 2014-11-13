@@ -76,6 +76,9 @@
 - fields: {name: Credit, symbol: credit}
   model: roster.logicaccounttype
   pk: 4
+- fields: {name: Converse, symbol: converse}
+  model: roster.logicaccounttype
+  pk: 5
 
 
 
@@ -99,6 +102,15 @@
 - fields: {name: 'Income', currency: 1, type: 2, symbol: 'income'}
   model: roster.logicaccount
   pk: 6
+- fields: {name: 'Converse CZK', currency: 1, type: 5, symbol: 'czk'}
+  model: roster.logicaccount
+  pk: 7
+- fields: {name: 'Converse EUR', currency: 2, type: 5, symbol: 'eur'}
+  model: roster.logicaccount
+  pk: 8
+- fields: {name: 'Converse USD', currency: 3, type: 5, symbol: 'usd'}
+  model: roster.logicaccount
+  pk: 9
 
 
 # BankAccounts
