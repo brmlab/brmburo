@@ -1,6 +1,6 @@
 import os; os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'project.settings')
 
-from project.roster.transactions import payment_income
+from project.roster.transactions import payment_income, account_sum
 from project.roster.models import BankTransaction, Currency, BankAccount, Buddy
 from project import settings
 from fiobank import FioBank
@@ -77,7 +77,16 @@ for token in settings.BANK_TOKENS:
 
         lt, b = payment_income(t)
         if lt is not None and b is not None:
-            logger.info('Incomming payment from user @%s accounted as transaction %d.' %( b.nickname, lt.id ))
+            template = u'Incomming payment %(amount)0.2f[%(curr1)s] from @%(nickname)s accounted as transaction #%(tid)d. New balance for @%(nickname)s is %(balance)s %(curr2)s.'
+            logger.info(template % dict(
+                amount = t.amount,
+                curr1 = t.currency.symbol,
+                curr2 = b.logic_account.currency.symbol,
+                nickname = b.nickname,
+                tid = lt.id,
+                balance = account_sum(b),
+            ))
+
 
         logger.info('Imported transaction %s.' % t)
 
