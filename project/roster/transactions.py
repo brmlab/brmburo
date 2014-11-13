@@ -63,7 +63,7 @@ def payment_due(buddy):
     # transaction
     lt = LogicTransaction(
         time=time,
-        comment='Credit @%s\'s monthly membership fee.'
+        comment='Credit @%s\'s monthly membership fee.' % buddy.nickname
     )
     lt.save()
 
