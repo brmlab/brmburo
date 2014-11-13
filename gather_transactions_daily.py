@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import os; os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'project.settings')
 
 from project.roster.transactions import payment_income, account_sum
