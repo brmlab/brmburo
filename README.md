@@ -4,7 +4,7 @@ Django boilerplate
 INSTALL
 -------
  * install distribuiton dependencies
-  <pre>apt-get install postgresql python-virtualenv python-crypto ipython python-sqlite python-psycopg2 python-yaml</pre>
+  <pre>apt-get install postgresql python-virtualenv python-crypto ipython python-sqlite python-psycopg2 python-yaml python-dev</pre>
  * clone this repository and set up dependencies
   <pre>git clone <this repo> </pre>
   <pre>make initenv</pre>
@@ -24,8 +24,17 @@ DATABASES = {
         }
 }
   </pre>
- * run update
+  you can create DB using:
+  <pre>
+CREATE DATABASE brmburo;
+CREATE ROLE brmbureaucrat WITH LOGIN PASSWORD 'my choosen password'
+GRANT ALL PRIVILEGES ON brmburo TO brmbureaucrat;
+  </pre>
+
+ * if installing prod moderun update
   <pre>make update</pre>
+ * otherwise 
+  <pre>make setup/[dev|test]</pre>
 
 
 
