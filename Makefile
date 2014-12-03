@@ -39,14 +39,15 @@ clean:
 reqs/%: ensure_virtualenv
 	pip install  --download-cache=tmp/cache --src=tmp/src -r requirements/$*.txt
 
-setup/test: ensure_virtualenv reqs/test
-
 setup/dev: ensure_virtualenv reqs/dev
 	if [ ! -f $(PROJECT_NAME)/settings/local.py ]; then \
 		echo 'from .dev import *' > $(PROJECT_NAME)/settings/local.py; \
 	fi
 	$(MANAGE) syncdb --all
 	$(MANAGE) migrate --fake
+
+setup/prod setup/test: ensure_virtualenv reqs/prod
+	$(MAKE) update
 
 update/dev: ensure_virtualenv reqs/dev
 	$(MAKE) update
