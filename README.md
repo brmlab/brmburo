@@ -32,7 +32,7 @@ CREATE ROLE brmbureaucrat WITH LOGIN PASSWORD 'my choosen password';
 GRANT ALL PRIVILEGES ON brmburo TO brmbureaucrat;
 EOF
   </pre>
-  and import data from database dump (acquired by pg\_dump):
+  and import data from database dump if desired (data must be acquired by pg\_dump first):
   <pre>sudo -u postgres psql brmburo &lt; brmburo.dump.sql</pre>
 
  * run setup
