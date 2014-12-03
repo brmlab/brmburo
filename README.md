@@ -4,12 +4,12 @@ Django boilerplate
 INSTALL
 -------
  * install distribuiton dependencies
-  <pre>apt-get install postgresql python-virtualenv python-crypto ipython python-sqlite python-psycopg2 python-yaml python-dev</pre>
+  <pre>apt-get install postgresql python-virtualenv python-crypto ipython python-sqlite python-psycopg2 python-yaml python-dev python-ecdsa fabric python-flake8 pep8 python-coverage</pre>
+
  * clone this repository and set up dependencies
   <pre>git clone <this repo> </pre>
   <pre>make initenv</pre>
   <pre>source bin/activate</pre>
-  <pre>make reqs/[dev|test|prod]</pre>
 
  * create, import database and set up DATABASES in project/settings/local.py
   <pre>
@@ -24,18 +24,22 @@ DATABASES = {
         }
 }
   </pre>
-  you can create DB using:
+  you can create user and empty postgres database using:
   <pre>
+sudo -u postgres psql <<-EOF
 CREATE DATABASE brmburo;
-CREATE ROLE brmbureaucrat WITH LOGIN PASSWORD 'my choosen password'
+CREATE ROLE brmbureaucrat WITH LOGIN PASSWORD 'my choosen password';
 GRANT ALL PRIVILEGES ON brmburo TO brmbureaucrat;
+EOF
   </pre>
+  and import data from database dump (acquired by pg\_dump):
+  <pre>sudo -u postgres psql brmburo < brmburo.dump.sql</pre>
 
- * if installing prod moderun update
-  <pre>make update</pre>
- * otherwise 
-  <pre>make setup/[dev|test]</pre>
+ * run setup
+  <pre>make setup/[dev|test|prod]</pre>
 
+ * if you start with blank database, you must at least load static data
+  <pre>make load</pre>
 
 
 TODO
