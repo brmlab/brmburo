@@ -6,7 +6,7 @@ INSTALL
  * install distribuiton dependencies
   <pre>apt-get install postgresql python-virtualenv python-crypto ipython python-sqlite python-psycopg2 python-yaml python-dev python-ecdsa fabric python-flake8 pep8 python-coverage</pre>
 
- * clone this repository and set up dependencies
+ * clone this repository and activate virtual environment
   <pre>git clone <this repo> </pre>
   <pre>make initenv</pre>
   <pre>source bin/activate</pre>
@@ -26,14 +26,14 @@ DATABASES = {
   </pre>
   you can create user and empty postgres database using:
   <pre>
-sudo -u postgres psql <<-EOF
+sudo -u postgres psql &lt;&lt;-EOF
 CREATE DATABASE brmburo;
 CREATE ROLE brmbureaucrat WITH LOGIN PASSWORD 'my choosen password';
 GRANT ALL PRIVILEGES ON brmburo TO brmbureaucrat;
 EOF
   </pre>
   and import data from database dump (acquired by pg\_dump):
-  <pre>sudo -u postgres psql brmburo < brmburo.dump.sql</pre>
+  <pre>sudo -u postgres psql brmburo &lt; brmburo.dump.sql</pre>
 
  * run setup
   <pre>make setup/[dev|test|prod]</pre>
