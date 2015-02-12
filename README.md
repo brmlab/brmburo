@@ -27,9 +27,9 @@ DATABASES = {
   you can create user and empty postgres database using:
   <pre>
 sudo -u postgres psql &lt;&lt;-EOF
-CREATE DATABASE brmburo;
 CREATE ROLE brmbureaucrat WITH LOGIN PASSWORD 'my choosen password';
-GRANT ALL PRIVILEGES ON brmburo TO brmbureaucrat;
+CREATE DATABASE brmburo;
+GRANT ALL PRIVILEGES ON DATABASE brmburo TO brmbureaucrat;
 EOF
   </pre>
   and import data from database dump if desired (data must be acquired by pg\_dump first):
