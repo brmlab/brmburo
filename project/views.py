@@ -96,5 +96,5 @@ def account_detail(request, id, **kw):
     return {
         'account': account,
         'balance': account_sum(account),
-        'transactions': LogicTransactionSplit.objects.filter(account=account).order_by('-transaction__time'),
+        'transactions': LogicTransactionSplit.objects.filter(account=account).order_by('transaction__time'),
         }
