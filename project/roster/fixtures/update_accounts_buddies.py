@@ -9,7 +9,7 @@ seq = count(15)
 def buddy2account(buddy):
     fields = buddy.get('fields')
     nick = '@'+fields.get('nickname')[:9]
-    name = 'Payments from '+' '.join(filter(None, map(fields.get, ('first_name', 'middle_name', 'surname',))))
+    name = 'Membership fees for '+' '.join(filter(None, map(fields.get, ('first_name', 'middle_name', 'surname',))))
     return dict(
         fields=dict(
             name=name,
