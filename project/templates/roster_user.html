@@ -31,7 +31,7 @@
         {% endfor %}
         <tr><th>Events</th><td>
             {% for event in events %}
-                {{ event.date|date:'Y-m-d' }}: <i>{{ event.type.name }}</i> {% if event.reason %} {{ event.reason }} {% endif %}
+                {{ event.date|date:'Y-m-d' }}{% if event.until %} - {{ event.until|date:'Y-m-d' }}{% endif %}: <i>{{ event.type.name }}</i> {% if event.reason %} {{ event.reason }} {% endif %}
                 <br/>
             {% endfor %}
         </td></tr>
