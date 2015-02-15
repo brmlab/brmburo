@@ -153,6 +153,8 @@ class LogicTransactionSplit(Model):
     account = ForeignKey(LogicAccount)
     amount = DecimalField(max_digits=8, decimal_places=2)
     comment = CharField(max_length=255, verbose_name='Transaction Split Description',null=True,blank=True)
+    def amount_(self):
+        return self.side * self.amount
     def __unicode__(self):
         template = u'%s %s %.2f (%s)'
         return template % (self.account, self.side, self.amount, self.comment)
