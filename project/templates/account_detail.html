@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block body_class %}{{ block.super }} home{% endblock %}
+
+{% block menu %}
+    <li><a href="{% url 'home' %}">Home</a></li>
+    <li><a href="{% url 'roster' %}">Roster</a></li>
+    <li class="active"><a href="{% url 'account_list' %}">Accounts</a></li>
+{% endblock %}
+
+{% block sidebar %}
+{% endblock %}
+
+{% block content %}
+    <table class="table">
+        <tr><th>ID</th><td>{{ account.id }}</td></tr>
+        <tr><th>Name</th><td>{{ account.name }}</td></tr>
+        <tr><th>Symbol</th><td>{{ account.symbol }}</td></tr>
+        <tr><th>Currency</th><td>{{ account.currency.symbol }}</td></tr>
+        <tr><th>Type</th><td>{{ account.type.name }}</td></tr>
+        <tr><th>Balance</th><td>{{ balance}} ({% if balance > 0 %}debt{% else %}credit{% endif %})</td></tr>
+        <tr><th>Transactions</th><td>
+            {% for transaction_split in transactions %}
+                {{ transaction_split.transaction.time|date:'Y-m-d' }}: <i>{% if transaction_split.comment %}{{ transaction_split.comment }}{% else %}{{ transaction_split.transaction.comment }}{% endif %}</i>
+                {{ transaction_split.amount_ }}
+                <br/>
+            {% endfor %}
+        </td></tr>
+    </table>
+{% endblock %}
+
+{% block javascript %}
+{% endblock  %}
+
+{% block footer %}
+{% endblock  %}

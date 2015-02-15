@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block body_class %}{{ block.super }} home{% endblock %}
+
+ {% block menu %}
+    <li><a href="{% url 'home' %}">Home</a></li>
+    <li><a href="{% url 'roster' %}">Roster</a></li>
+    <li class="active"><a href="{% url 'account_list' %}">Accounts</a></li>
+{% endblock %}
+
+{% block sidebar %}
+{% endblock %}
+
+{% block content %}
+    <table class="table" style="display: table">
+        <tr>
+            <th>id</th>
+            <th>symbol</th>
+            <th>balance</th>
+            <th>currency</th>
+            <th>type</th>
+            <th>name</th>
+        </tr>
+        {% for account,balance in accounts %}
+            <tr>
+                <td><a href="{% url 'account_detail' account.id %}">{{ account.id }}</a></td>
+                <td>{{ account.symbol }}</td>
+                <td>{{ balance }} {% if balance > 0 %}(debt){% elif balance < 0 %}(credit){% endif %}</td>
+                <td>{{ account.currency.symbol }}</td>
+                <td>{{ account.type.name }}</td>
+                <td>{{ account.name }}</td>
+            </tr>
+        {% endfor %}
+
+    </table>
+{% endblock %}
+
+{% block javascript %}
+{% endblock  %}
+
+{% block footer %}
+
+{% endblock  %}

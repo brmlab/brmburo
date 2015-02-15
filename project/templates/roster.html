@@ -3,6 +3,12 @@
 {% block body_class %}{{ block.super }} home{% endblock %}
 
 
+{% block menu %}
+    <li><a href="{% url 'home' %}">Home</a></li>
+    <li class="active"><a href="{% url 'roster' %}">Roster</a></li>
+    <li><a href="{% url 'account_list' %}">Accounts</a></li>
+{% endblock %}
+
 {% block sidebar %}
 {% endblock %}
 
@@ -11,12 +17,16 @@
         <tr>
             <th>uid</th>
             <th>nick</th>
+            <th>balance</th>
+            <th>type</th>
             <th>name</th>
         </tr>
-        {% for user,events,principals in users %}
+        {% for user,balance in users %}
             <tr>
                 <td><a href="{% url 'roster_user' user.uid %}">{{ user.uid }}</a></td>
                 <td>{{ user.nickname }}</td>
+                <td><a href="{% url 'account_detail' user.logic_account.id %}">{{ balance }}</a> {% if balance > 0 %}(debt){% elif balance < 0 %}(credit){% endif %}</td>
+                <td>{{ user.type.name }}</td>
                 <td>{{ user.first_name }} {{ user.middle_name }} {{ user.surname }}</td>
             </tr>
         {% endfor %}
@@ -28,5 +38,4 @@
 {% endblock  %}
 
 {% block footer %}
-    auto footer
 {% endblock  %}

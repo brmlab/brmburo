@@ -28,12 +28,12 @@
         <div class="navbar navbar-inverse navbar-fixed-top">
             <div class="navbar-inner">
                 <div class="container">
-                    <a class="brand" href="/">{% block brand %}{% if site_resource.brand %}{{ site_resource.brand|removetags:"p a span"|safe }}{% else %}Brand{% endif %}{% endblock %}</a>
+                    <a class="brand" href="/">{% block brand %}BrmBüro{% endblock %}</a>
                     <ul class="nav">
                         {% block menu %}
-                            <li class="active"><a href="#">Home</a></li>
-                            <li><a href="#">Link</a></li>
-                            <li><a href="#">Link</a></li>
+                            <li class="active"><a href="{% url 'home' %}">Home</a></li>
+                            <li><a href="{% url 'roster' %}">Roster</a></li>
+                            <li><a href="{% url 'account_list' %}">Accounts</a></li>
                         {% endblock %}
                     </ul>
                     {% if user.is_authenticated %}
@@ -92,9 +92,9 @@
             <div class="container">
                 <div class="container-fluid">
                     <div class="row-fluid">
-                        <div class="span2">{% if site_resource.footer_left %}{{ site_resource.footer_left|removetags:"p span"|safe }}{% else %}Left footer{% endif %}</div>
+                        <div class="span2">{% if site_resource.footer_left %}{{ site_resource.footer_left|removetags:"p span"|safe }}{% else %}{% endif %}</div>
                         <div class="span7 text-center">{% block footer %}{% endblock %}</div>
-                        <div class="span2 text-right">{% if site_resource.footer_right %}{{ site_resource.footer_right|removetags:"p span"|safe }}{% else %}Right footer{% endif %}</div>
+                        <div class="span2 text-right">{% if site_resource.footer_right %}{{ site_resource.footer_right|removetags:"p span"|safe }}{% else %}{% endif %}</div>
                     </div>
                 </div>
             </div>

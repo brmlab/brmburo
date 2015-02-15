@@ -1,3 +1,5 @@
+from project.roster.transactions import account_sum
+
 __author__ = 'pborky'
 
 from django.contrib import messages
@@ -65,9 +67,16 @@ def roster(request, **kw):
 
     return {
         'users':
-            ((buddy,BuddyEvent.objects.filter(buddy=buddy),SecurityPrincipal.objects.filter(buddy=buddy))
-                for buddy in Buddy.objects.all().order_by('nickname')),
+            ((buddy,account_sum(buddy)) for buddy in Buddy.objects.all().order_by('nickname')),
     }
+
+@view_GET( r'^account/list$', template = 'account_list.html')
+def account_list(request, **kw):
+    from roster.models import LogicAccount,LogicTransactionSplit
+
+    return {
+        'accounts': ( (account,account_sum(account)) for account in  LogicAccount.objects.all() ),
+        }
 
 @view_GET( r'^roster/user/(?P<uid>[0-9]*)$', template = 'roster_user.html')
 def roster_user(request, uid, **kw):
@@ -75,6 +84,17 @@ def roster_user(request, uid, **kw):
     buddy = Buddy.objects.get(uid=int(uid))
     return {
         'user': buddy,
+        'balance': account_sum(buddy),
         'events': BuddyEvent.objects.filter(buddy=buddy).order_by('date'),
         'principals': SecurityPrincipal.objects.filter(buddy=buddy).order_by('since'),
-    }
+        }
+
+@view_GET( r'^account/detail/(?P<id>[0-9]*)$', template = 'account_detail.html')
+def account_detail(request, id, **kw):
+    from roster.models import LogicAccount,LogicTransactionSplit
+    account = LogicAccount.objects.get(id=int(id))
+    return {
+        'account': account,
+        'balance': account_sum(account),
+        'transactions': LogicTransactionSplit.objects.filter(account=account).order_by('-transaction__time'),
+        }
