@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 import os; os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'project.settings')
 
 from project.roster.transactions import payment_income, account_sum
@@ -14,7 +12,8 @@ from time import sleep
 import datetime
 import logging
 
-FIRST_DATE = datetime.date(2010, 9, 1)
+#FIRST_DATE = datetime.date(2010, 9, 1)
+FIRST_DATE = datetime.date(2015,1,1)
 logger = logging.getLogger(__name__)
 
 
