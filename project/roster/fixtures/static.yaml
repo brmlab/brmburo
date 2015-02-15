@@ -111,9 +111,6 @@
 - fields: {name: 'Converse USD', currency: 3, type: 5, symbol: 'usd'}
   model: roster.logicaccount
   pk: 9
-- fields: {name: 'Initial Dues', currency: 1, type: 4, symbol: 'initial' }
-  model: roster.logicaccount
-  pk: 10
 
 
 # BankAccounts
