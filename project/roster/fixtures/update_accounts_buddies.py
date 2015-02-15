@@ -1,7 +1,7 @@
 import yaml
 from itertools import count
 
-data =  yaml.load(open('roster.yaml','r'))
+data =  yaml.load(open('buddy.yaml','r'))
 buddies =  filter(lambda o: o.get('model')== 'roster.buddy',data)
 
 seq = count(15)
