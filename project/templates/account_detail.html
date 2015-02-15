@@ -21,8 +21,9 @@
         <tr><th>Balance</th><td>{{ balance}} ({% if balance > 0 %}debt{% else %}credit{% endif %})</td></tr>
         <tr><th>Transactions</th><td>
             {% for transaction_split in transactions %}
-                {{ transaction_split.transaction.time|date:'Y-m-d' }}: <i>{% if transaction_split.comment %}{{ transaction_split.comment }}{% else %}{{ transaction_split.transaction.comment }}{% endif %}</i>
-                {{ transaction_split.amount_ }}
+                {{ transaction_split.transaction.time|date:'Y-m-d' }}:
+                {{ transaction_split.amount_ }}{{ transaction_split.account.currency.symbol }}
+                <i>{% if transaction_split.comment %}{{ transaction_split.comment }}{% else %}{{ transaction_split.transaction.comment }}{% endif %}</i>
                 <br/>
             {% endfor %}
         </td></tr>
