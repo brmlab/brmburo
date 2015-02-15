@@ -12,7 +12,7 @@ rmenv: clean
 
 initenv:
 	virtualenv .
-	virtualenv . --relocatable
+	#virtualenv . --relocatable
 	virtualenv . --system-site-packages
 	mkdir tmp
 	echo '# Environment initialization placeholder. Do not delete. Use "make rmenv" to remove environment.' > $@
@@ -58,7 +58,7 @@ update: ensure_virtualenv
 	$(MANAGE) migrate
 	$(MANAGE) collectstatic --noinput
 
-load: load/static load/account load/buddy
+load: load/static load/account load/buddy load/buddyevent load/transaction
 
 load/%:
 	$(MANAGE) loaddata $* 
