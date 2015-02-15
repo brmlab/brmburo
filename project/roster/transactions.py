@@ -28,30 +28,36 @@ DISCOUNT_FACTORS = dict(
     discount=0.,
 )
 
-def payment_due(buddy):
-    time = now()
+def payment_due(buddy, time=None, limit=28.):
+    if not time:
+      time = now()
 
     buddy_logic_account = buddy.logic_account
 
     if buddy_logic_account is None:
         return None, None
 
-    # if already issued in past 28 days return that transaction
-    lts = LogicTransactionSplit.objects.filter(
-        account = buddy_logic_account,
-        transaction__time__gt=time-timedelta(28.),
-        side=1,  # credit
-    )
-    if lts.exists():
-        return lts[0].transaction, buddy
+    # if already issued in past <limit> days return that transaction
+    if limit:
+      lts = LogicTransactionSplit.objects.filter(
+          account = buddy_logic_account,
+          transaction__time__gt=time-timedelta(limit),
+          side=1,  # credit
+      )
+      if lts.exists():
+          return lts[0].transaction, buddy
 
     ammount = PAYMENT.get('CZK')
+
+    # is valid member? there must be start and not tne terminate event
+    if not buddy.type.symbol == 'member':
+        return None, buddy
 
     # get valid discount events and calculate discount
     be = BuddyEvent.objects.filter(
         buddy=buddy,
-        date__gte=time,        # valid now
-        until__lte=time,
+        date__lte=time,        # valid now
+        until__gte=time,
         until__isnull=False,
         type__symbol__startswith='discount',
     )
