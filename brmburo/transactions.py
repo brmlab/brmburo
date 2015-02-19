@@ -28,9 +28,61 @@ DISCOUNT_FACTORS = dict(
     discount=0.,
 )
 
+def get_discount(buddy, time=None):
+    if not time:
+        time = now()
+        # get valid discount events and calculate discount
+    be = BuddyEvent.objects.filter(
+        buddy=buddy,
+        date__lte=time,        # valid now
+        until__gte=time,
+        until__isnull=False,
+        type__symbol__startswith='discount',
+    )
+    if be.exists():
+        if be.count() > 1:
+            raise Exception('Only one concurent discount is allowed.')
+        return DISCOUNT_FACTORS.get(be[0].type.symbol, 1.)
+    return 1
+
+def is_valid_member(buddy, time=None):
+    if not time:
+        time = now()
+
+    # check if suspended
+    be = BuddyEvent.objects.filter(
+        buddy=buddy,
+        date__lte=time,        # valid now
+        until__gte=time,
+        until__isnull=False,
+        type__symbol='suspend',
+    )
+    if be.exists():
+        if be.count() > 1:
+            raise Exception('Only one concurent suspension is allowed.')
+        return False
+
+    # what is latest event
+    be = BuddyEvent.objects.filter(
+        buddy=buddy,
+        date__lte=time,        # valid now
+        until__isnull=True,
+        type__symbol__in=('terminate', 'start'),
+    )
+    if be.exists():
+        be = be.latest('date')
+        current_month = (be.date.year,be.date.month) == (time.year,time.month)
+        if be.type.symbol == 'start':
+            return not current_month # does not pay for the first month
+        if be.type.symbol == 'terminate':
+            return current_month # pays for last month
+
 def payment_due(buddy, time=None, limit=28.):
     if not time:
       time = now()
+
+    if not is_valid_member(buddy, time):
+        return None, buddy
 
     buddy_logic_account = buddy.logic_account
 
@@ -49,22 +101,8 @@ def payment_due(buddy, time=None, limit=28.):
 
     ammount = PAYMENT.get('CZK')
 
-    # is valid member? there must be start and not tne terminate event
-    if not buddy.type.symbol == 'member':
-        return None, buddy
-
     # get valid discount events and calculate discount
-    be = BuddyEvent.objects.filter(
-        buddy=buddy,
-        date__lte=time,        # valid now
-        until__gte=time,
-        until__isnull=False,
-        type__symbol__startswith='discount',
-    )
-    if be.exists():
-        if be.count() > 1:
-            raise Exception('Only one concurent discount is allowed.')
-        ammount *= DISCOUNT_FACTORS.get(be[0].type.symbol, 1.)
+    ammount *= get_discount(buddy,time)
 
     # transaction
     lt = LogicTransaction(
