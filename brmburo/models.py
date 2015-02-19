@@ -28,7 +28,7 @@ class Attachment(Model):
         verbose_name = "Attachment"
 
 class Buddy(Model):
-    uid = IntegerField(verbose_name='Unique Prime')
+    uid = IntegerField(verbose_name='Unique Prime', unique=True)
     type = ForeignKey(BuddyType) # friend, member, terminated, suspended
     first_name = CharField(max_length=100, verbose_name='First Name', blank=True, null=True )
     middle_name = CharField(max_length=100, verbose_name='Middle Name', blank=True, null=True )
