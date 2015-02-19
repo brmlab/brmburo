@@ -117,8 +117,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
      "django.core.context_processors.tz",
      "django.contrib.messages.context_processors.messages",
      'django.core.context_processors.request',
-     'project.context_processors.site_data',
-     'project.context_processors.login_form',
+     'brmburo.context_processors.site_data',
+     'brmburo.context_processors.login_form',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -151,8 +151,7 @@ INSTALLED_APPS = (
     # 'django.contrib.admindocs',
     'south',
     'bootstrap_toolkit',
-    'project',
-    'project.roster',
+    'brmburo'
 )
 
 BOOTSTRAP_BASE_URL  = STATIC_URL

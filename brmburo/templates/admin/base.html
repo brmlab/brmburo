@@ -33,9 +33,9 @@
                     <a class="brand" href="/">{% block brand %}{% if site_resource.brand %}{{ site_resource.brand|removetags:"p a span"|safe }}{% else %}Brand{% endif %}{% endblock %}</a>
                     <ul class="nav">
                         {% block menu %}
-                            <li class="active"><a href="#">Home</a></li>
-                            <li><a href="#">Link</a></li>
-                            <li><a href="#">Link</a></li>
+                            <li class="active"><a href="{% url 'home' %}">Home</a></li>
+                            <li><a href="{% url 'roster' %}">Roster</a></li>
+                            <li><a href="{% url 'account_list' %}">Accounts</a></li>
                         {% endblock %}
                     </ul>
                     {% if user.is_authenticated %}

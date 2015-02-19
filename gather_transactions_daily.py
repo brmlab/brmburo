@@ -1,8 +1,8 @@
-import os; os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'project.settings')
+import os; os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'brmburo.settings')
 
-from project.roster.transactions import payment_income, account_sum
-from project.roster.models import BankTransaction, Currency, BankAccount, Buddy
-from project import settings
+from brmburo.transactions import payment_income, account_sum
+from brmburo.models import BankTransaction, Currency, BankAccount
+from brmburo import settings
 from fiobank import FioBank
 from django.core.exceptions import ObjectDoesNotExist
 

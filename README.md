@@ -11,7 +11,7 @@ INSTALL
   <pre>source bin/activate</pre>
   <pre>make reqs/[dev|test|prod]</pre>
 
- * create, import database and set up DATABASES in project/settings/local.py
+ * create, import database and set up DATABASES in brmburo/settings/local.py
   <pre>
 DATABASES = {
     'default': {

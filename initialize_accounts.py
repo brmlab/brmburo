@@ -1,7 +1,7 @@
-import os; os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'project.settings')
+import os; os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'brmburo.settings')
 
-from project.roster.transactions import payment_due, account_sum
-from project.roster.models import Buddy, LogicTransactionSplit
+from brmburo.transactions import payment_due, account_sum
+from brmburo.models import Buddy, LogicTransactionSplit
 
 import datetime
 import logging

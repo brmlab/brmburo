@@ -3,7 +3,7 @@ import logging
 from django.utils.timezone import now
 
 from datetime import timedelta
-from project.roster.models import LogicAccount, LogicTransaction, LogicTransactionSplit, Buddy, BuddyEvent
+from models import LogicAccount, LogicTransaction, LogicTransactionSplit, Buddy, BuddyEvent
 
 
 logger = logging.getLogger(__name__)

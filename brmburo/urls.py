@@ -9,8 +9,7 @@ from .views import login,logout,login,do_login, roster, roster_user, account_det
 
 admin.autodiscover()
 
-autoregister('roster')
-autoregister('project')
+autoregister('brmburo')
 
 urlpatterns = patterns('',
     do_login.url(),

@@ -1,132 +1,132 @@
 ## BuddyTyoe
 - fields: {is_member: true, name: Member, symbol: member}
-  model: roster.buddytype
+  model: brmburo.buddytype
   pk: 1
 - fields: {is_member: false, name: Terminated, symbol: terminated}
-  model: roster.buddytype
+  model: brmburo.buddytype
   pk: 2
 - fields: {is_member: false, name: Suspended, symbol: suspended}
-  model: roster.buddytype
+  model: brmburo.buddytype
   pk: 3
 - fields: {is_member: false, name: Friend, symbol: friend}
-  model: roster.buddytype
+  model: brmburo.buddytype
   pk: 4
 
 ## BuddyEventType
 - fields: {name: Start, symbol: start}
-  model: roster.buddyeventtype
+  model: brmburo.buddyeventtype
   pk: 1
 - fields: {name: Terminate, symbol: terminate}
-  model: roster.buddyeventtype
+  model: brmburo.buddyeventtype
   pk: 2
 - fields: {name: Suspend, symbol: suspend}
-  model: roster.buddyeventtype
+  model: brmburo.buddyeventtype
   pk: 3
 - fields: {name: Paid Until, symbol: paid}
-  model: roster.buddyeventtype
+  model: brmburo.buddyeventtype
   pk: 4
 - fields: {name: "Discount 25%", symbol: discount25}
-  model: roster.buddyeventtype
+  model: brmburo.buddyeventtype
   pk: 5
 - fields: {name: "Discount 50%", symbol: discount50}
-  model: roster.buddyeventtype
+  model: brmburo.buddyeventtype
   pk: 6
 - fields: {name: "Discount 75%", symbol: discount75}
-  model: roster.buddyeventtype
+  model: brmburo.buddyeventtype
   pk: 7
 - fields: {name: "Discount 100%", symbol: discount}
-  model: roster.buddyeventtype
+  model: brmburo.buddyeventtype
   pk: 8
 
 ## PrincipalType
 - fields: {name: GPG, symbol: gpg}
-  model: roster.principaltype
+  model: brmburo.principaltype
   pk: 1
 - fields: {name: SSH, symbol: ssh}
-  model: roster.principaltype
+  model: brmburo.principaltype
   pk: 2
 - fields: {name: Physical key, symbol: key}
-  model: roster.principaltype
+  model: brmburo.principaltype
   pk: 3
 - fields: {name: Card, symbol: card}
-  model: roster.principaltype
+  model: brmburo.principaltype
   pk: 4
 
 ## Currency
 - fields: {name: Koruna ceska, symbol: CZK}
-  model: roster.currency
+  model: brmburo.currency
   pk: 1
 - fields: {name: Euro, symbol: EUR}
-  model: roster.currency
+  model: brmburo.currency
   pk: 2
 - fields: {name: U.S. Dollar, symbol: USD}
-  model: roster.currency
+  model: brmburo.currency
   pk: 3
 
 ## LogicAccountType  # bank, income, expense, credit
 - fields: {name: Bank, symbol: bank}
-  model: roster.logicaccounttype
+  model: brmburo.logicaccounttype
   pk: 1
 - fields: {name: Income, symbol: income}
-  model: roster.logicaccounttype
+  model: brmburo.logicaccounttype
   pk: 2
 - fields: {name: Expense, symbol: expense}
-  model: roster.logicaccounttype
+  model: brmburo.logicaccounttype
   pk: 3
 - fields: {name: Credit, symbol: credit}
-  model: roster.logicaccounttype
+  model: brmburo.logicaccounttype
   pk: 4
 - fields: {name: Converse, symbol: converse}
-  model: roster.logicaccounttype
+  model: brmburo.logicaccounttype
   pk: 5
 
 
 
 # LogicAccount
 - fields: {name: 'Bank account 2500079551/2010', currency: 1, type: 1, symbol: 'bank1'}
-  model: roster.logicaccount
+  model: brmburo.logicaccount
   pk: 1
 - fields: {name: 'Bank account 2600078804/2010', currency: 1, type: 1, symbol: 'bank2'}
-  model: roster.logicaccount
+  model: brmburo.logicaccount
   pk: 2
 - fields: {name: 'Bank account 2100079552/2010', currency: 2, type: 1, symbol: 'bank3'}
-  model: roster.logicaccount
+  model: brmburo.logicaccount
   pk: 3
 - fields: {name: 'Bank account 2300079549/2010', currency: 2, type: 1, symbol: 'bank4'}
-  model: roster.logicaccount
+  model: brmburo.logicaccount
   pk: 4
 
 - fields: {name: 'Prepaid Dues', currency: 1, type: 4, symbol: 'prepaid'}
-  model: roster.logicaccount
+  model: brmburo.logicaccount
   pk: 5
 - fields: {name: 'Income', currency: 1, type: 2, symbol: 'income'}
-  model: roster.logicaccount
+  model: brmburo.logicaccount
   pk: 6
 - fields: {name: 'Converse CZK', currency: 1, type: 5, symbol: 'czk'}
-  model: roster.logicaccount
+  model: brmburo.logicaccount
   pk: 7
 - fields: {name: 'Converse EUR', currency: 2, type: 5, symbol: 'eur'}
-  model: roster.logicaccount
+  model: brmburo.logicaccount
   pk: 8
 - fields: {name: 'Converse USD', currency: 3, type: 5, symbol: 'usd'}
-  model: roster.logicaccount
+  model: brmburo.logicaccount
   pk: 9
 
 
 # BankAccounts
 - fields: {account_name: null, account_number: '2500079551', bank_code: '2010', currency: 1,
     logic_account: 1}
-  model: roster.bankaccount
+  model: brmburo.bankaccount
   pk: 1
 - fields: {account_name: null, account_number: '2600078804', bank_code: '2010', currency: 1,
     logic_account: 2}
-  model: roster.bankaccount
+  model: brmburo.bankaccount
   pk: 2
 - fields: {account_name: null, account_number: '2100079552', bank_code: '2010', currency: 2,
     logic_account: 3}
-  model: roster.bankaccount
+  model: brmburo.bankaccount
   pk: 3
 - fields: {account_name: null, account_number: '2300079549', bank_code: '2010', currency: 2,
     logic_account: 4}
-  model: roster.bankaccount
+  model: brmburo.bankaccount
   pk: 4

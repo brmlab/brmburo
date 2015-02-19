@@ -1,5 +1,5 @@
 MANAGE=python manage.py
-PROJECT_NAME=project
+PROJECT_NAME=brmburo
 FLAKE8_OPTS=--exclude=.git,migrations --max-complexity=10
 SETTINGS=--settings=$(PROJECT_NAME).settings.test
 

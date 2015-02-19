@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 
-import os;os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'project.settings')
+import os;os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'brmburo.settings')
 
-from project.roster.models import Buddy
-from project.roster.transactions import account_sum
+from brmburo.models import Buddy
+from brmburo.transactions import account_sum
 import sys
 import argparse
 

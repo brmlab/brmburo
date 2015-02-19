@@ -1,6 +1,7 @@
 __author__ = 'pborky'
 
 from django.db.models import Model, CharField, EmailField, IntegerField, BooleanField, DateField, TextField, ForeignKey, ManyToManyField, FileField, DateTimeField, FloatField, DecimalField
+from tinymce.models import HTMLField
 from django.utils.datetime_safe import date
 from django.contrib.auth.models import User
 
@@ -127,7 +128,7 @@ class LogicAccountType(Model): # bank, income, expense, credit
 
 class LogicAccount(Model):
     name = CharField(max_length=100, verbose_name='Logic Account Name',null=True,blank=True)
-    symbol = CharField(max_length=10, unique=True)
+    symbol = CharField(max_length=20, unique=True)
     currency = ForeignKey(Currency)
     type = ForeignKey(LogicAccountType)
     def __unicode__(self):
@@ -212,3 +213,14 @@ class BankTransaction(Model):
 # Accounting dues (at the 10th day of the month) is a transaction:
 # pasky        CREDIT 500   (if pasky's balance ends up positive, he owes us money)
 # prepaid_dues DEBIT  500   (if members globally don't pay their dues, this account could get negative)
+
+
+
+class SiteResource(Model): # some resource strings
+    name = CharField(max_length=100, verbose_name='Name')
+    value = HTMLField(verbose_name='Value')
+    def __unicode__(self):
+        return u'%s' %(self.name,)
+    class Meta:
+        ordering = ["name"]
+        verbose_name = "Site Resource"
