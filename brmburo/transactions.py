@@ -8,7 +8,7 @@ from models import LogicAccount, LogicTransaction, LogicTransactionSplit, Buddy,
 
 logger = logging.getLogger(__name__)
 
-PREPAID = LogicAccount.objects.get(symbol='prepaid')
+DUES = LogicAccount.objects.get(symbol='dues')
 INCOME = LogicAccount.objects.get(symbol='income')
 CONVERSE = dict(
     CZK = LogicAccount.objects.get(symbol='czk', type__symbol='converse'),
@@ -114,15 +114,15 @@ def payment_due(buddy, time=None, limit=28.):
     # splits
     LogicTransactionSplit(
         transaction = lt,
-        side = 1,
+        side = -1,
         account = buddy_logic_account,
         amount = ammount,
         comment = '',
     ).save() #credit
     LogicTransactionSplit(
         transaction = lt,
-        side = -1,
-        account = PREPAID,
+        side = 1,
+        account = DUES,
         amount = ammount,
         comment = '',
     ).save() #debit
@@ -181,15 +181,15 @@ def payment_income(bank_transaction, buddy=None):
     ).save() #credit
     LogicTransactionSplit(
         transaction = lt,
-        side = -1,
+        side = 1,
         account = buddy_logic_account,
         amount = amount_czk,
         comment = '',
     ).save() #debit
     LogicTransactionSplit(
         transaction = lt,
-        side = 1,
-        account = PREPAID,
+        side = -1,
+        account = DUES,
         amount = amount_czk,
         comment = '',
     ).save() #credit

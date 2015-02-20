@@ -18,7 +18,7 @@
         <tr><th>Symbol</th><td>{{ account.symbol }}</td></tr>
         <tr><th>Currency</th><td>{{ account.currency.symbol }}</td></tr>
         <tr><th>Type</th><td>{{ account.type.name }}</td></tr>
-        <tr><th>Balance</th><td>{{ balance}} ({% if balance > 0 %}debt{% else %}credit{% endif %})</td></tr>
+        <tr><th>Balance</th><td>{{ balance}}</td></tr>
         <tr><th>Transactions</th><td>
             {% for transaction_split in transactions %}
                 {{ transaction_split.transaction.time|date:'Y-m-d' }}:

@@ -24,7 +24,7 @@
         <tr><th>Born</th><td>{{ user.born|date:"Y" }}</td></tr>
         <tr><th>IRL</th><td>{{ user.irl }}</td></tr>
         <tr><th>Comment</th><td>{{ user.comment }}</td></tr>
-        <tr><th>Balance</th><td> <a href="{% url 'account_detail' user.logic_account.id %}">{{ balance }}</a> {% if balance > 0 %}(debt){% elif balance < 0 %}(credit){% endif %}</td></tr>
+        <tr><th>Balance</th><td> <a href="{% url 'account_detail' user.logic_account.id %}">{{ balance }}</a></td></tr>
         {% for principal in principals %}
             <tr><th>{{ principal.type.name }} {{ principal.name }}</th><td>{{ principal.value }}</td></tr>
 

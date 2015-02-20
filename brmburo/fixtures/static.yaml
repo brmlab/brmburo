@@ -96,7 +96,7 @@
   model: brmburo.logicaccount
   pk: 4
 
-- fields: {name: 'Prepaid Dues', currency: 1, type: 4, symbol: 'prepaid'}
+- fields: {name: 'Dues in transit', currency: 1, type: 4, symbol: 'dues'}
   model: brmburo.logicaccount
   pk: 5
 - fields: {name: 'Income', currency: 1, type: 2, symbol: 'income'}
