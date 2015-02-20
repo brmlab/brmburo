@@ -31,29 +31,29 @@
             <tr><th>{{ principal.type.name }} {{ principal.name }}</th><td>{{ principal.value }}</td></tr>
 
         {% endfor %}
-        <tr><th>Events</th>
-            <td>
-
-
-                <table class="table table-condensed table-striped table-bordered">
-                    <tr>
-                        <th>date</th>
-                        <th>until</th>
-                        <th>type</th>
-                        <th>comment</th>
-                    </tr>
-
-                    {% for event in events %}
+        {% if events.exists %}
+            <tr><th>Events</th>
+                <td>
+                    <table class="table table-condensed table-striped table-bordered">
                         <tr>
-                            <td>{{ event.date|date:'Y-m-d' }}</td>
-                            <td>{% if event.until %}{{ event.until|date:'Y-m-d' }}{% endif %}</td>
-                            <td>{{ event.type.name }}</td>
-                            <td>{% if event.reason %} {{ event.reason }} {% endif %}</td>
+                            <th>date</th>
+                            <th>until</th>
+                            <th>type</th>
+                            <th>comment</th>
                         </tr>
-                    {% endfor %}
-                </table>
-            </td>
-        </tr>
+
+                        {% for event in events %}
+                            <tr>
+                                <td>{{ event.date|date:'Y-m-d' }}</td>
+                                <td>{% if event.until %}{{ event.until|date:'Y-m-d' }}{% endif %}</td>
+                                <td>{{ event.type.name }}</td>
+                                <td>{% if event.reason %} {{ event.reason }} {% endif %}</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </td>
+            </tr>
+        {% endif %}
     </table>
 {% endblock %}
 

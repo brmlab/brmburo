@@ -1,3 +1,4 @@
+from decimal import Decimal
 import logging
 
 from django.utils.timezone import now
@@ -242,6 +243,6 @@ def account_sum(logic_account):
     lts = LogicTransactionSplit.objects.filter(
         account=logic_account
     )
-    return reduce(lambda acc, la: acc+la.side*la.amount, lts, 0)
+    return reduce(lambda acc, la: acc+la.side*la.amount, lts, Decimal('0.00'))
 
 

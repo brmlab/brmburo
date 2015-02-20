@@ -23,10 +23,12 @@
             <th>type</th>
             <th>name</th>
         </tr>
-        {% for account,balance in accounts %}
+        {% for account,balance,buddy in accounts %}
             <tr>
                 <td><a href="{% url 'account_detail' account.id %}">#{{ account.id }}</a></td>
-                <td>{{ account.symbol }}</td>
+                <td>
+                    {% if buddy %}<a href="{% url 'roster_user' buddy.uid %}">@{{ buddy.nickname }}</a>{% else %}{{ account.symbol }}{% endif %}
+                </td>
                 <td>{{ balance }}</td>
                 <td>{{ account.currency.symbol }}</td>
                 <td>{{ account.type.name }}</td>

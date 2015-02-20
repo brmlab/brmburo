@@ -73,10 +73,11 @@ def roster(request, **kw):
 
 @view_GET( r'^account/list$', template = 'account_list.html')
 def account_list(request, **kw):
-    from models import LogicAccount
-
+    def getbuddy(account):
+        buddy = Buddy.objects.filter(logic_account=account)
+        return buddy[0] if buddy.exists() else None
     return {
-        'accounts': ( (account,account_sum(account)) for account in  LogicAccount.objects.all() ),
+        'accounts': ( (account,account_sum(account),getbuddy(account)) for account in  LogicAccount.objects.all() ),
         }
 
 @view_GET( r'^transaction/list$', template = 'transaction_list.html')
