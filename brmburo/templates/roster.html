@@ -7,13 +7,15 @@
     <li><a href="{% url 'home' %}">Home</a></li>
     <li class="active"><a href="{% url 'roster' %}">Roster</a></li>
     <li><a href="{% url 'account_list' %}">Accounts</a></li>
+    <li><a href="{% url 'transaction_list' %}">Transactions</a></li>
 {% endblock %}
 
 {% block sidebar %}
 {% endblock %}
 
 {% block content %}
-    <table class="table" style="display: table">
+    <h3>Roster</h3>
+    <table class="table table-hover" style="display: table">
         <tr>
             <th>uid</th>
             <th>nick</th>

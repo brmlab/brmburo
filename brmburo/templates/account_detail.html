@@ -6,27 +6,47 @@
     <li><a href="{% url 'home' %}">Home</a></li>
     <li><a href="{% url 'roster' %}">Roster</a></li>
     <li class="active"><a href="{% url 'account_list' %}">Accounts</a></li>
+    <li><a href="{% url 'transaction_list' %}">Transactions</a></li>
 {% endblock %}
 
 {% block sidebar %}
 {% endblock %}
 
 {% block content %}
-    <table class="table">
-        <tr><th>ID</th><td>{{ account.id }}</td></tr>
+    <h3>Account details</h3>
+    <table class="table  table-hover">
+        <tr><th>ID</th><td>#{{ account.id }}</td></tr>
         <tr><th>Name</th><td>{{ account.name }}</td></tr>
-        <tr><th>Symbol</th><td>{{ account.symbol }}</td></tr>
+        <tr><th>Symbol</th><td>{% if buddy %}<a href="{% url 'roster_user' buddy.uid %}">{{ buddy.nickname }}</a>{% else %}{{ account.symbol }}{% endif %}
+
+            </td></tr>
         <tr><th>Currency</th><td>{{ account.currency.symbol }}</td></tr>
         <tr><th>Type</th><td>{{ account.type.name }}</td></tr>
         <tr><th>Balance</th><td>{{ balance}}</td></tr>
-        <tr><th>Transactions</th><td>
-            {% for transaction_split in transactions %}
-                {{ transaction_split.transaction.time|date:'Y-m-d' }}:
-                {{ transaction_split.amount_ }}{{ transaction_split.account.currency.symbol }}
-                <i>{% if transaction_split.comment %}{{ transaction_split.comment }}{% else %}{{ transaction_split.transaction.comment }}{% endif %}</i>
-                <br/>
-            {% endfor %}
-        </td></tr>
+        <tr><th>Transactions</th>
+            <td>
+
+                <table class="table table-condensed table-striped table-bordered">
+                    <tr>
+                        <th>date</th>
+                        <th>amount</th>
+                        <th>currency</th>
+                        <th>transaction</th>
+                        <th>comment</th>
+                    </tr>
+                    {% for split in splits %}
+                        <tr>
+                            <td>{{ split.transaction.time|date:'Y-m-d' }}</td>
+                            <td>{{ split.amount_ }}</td>
+                            <td>{{ split.account.currency.symbol }}</td>
+                            <td><a href="{% url 'transaction_detail' split.transaction.id %}">#{{ split.transaction.id }}</a></td>
+                            <td><i>{% if split.comment %}{{ split.comment }}{% else %}{{ split.transaction.comment }}{% endif %}</i></td>
+
+                        </tr>
+                    {% endfor %}
+                </table>
+            </td>
+        </tr>
     </table>
 {% endblock %}
 

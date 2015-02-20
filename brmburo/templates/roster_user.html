@@ -7,6 +7,7 @@
     <li><a href="{% url 'home' %}">Home</a></li>
     <li class="active"><a href="{% url 'roster' %}">Roster</a></li>
     <li><a href="{% url 'account_list' %}">Accounts</a></li>
+    <li><a href="{% url 'transaction_list' %}">Transactions</a></li>
 {% endblock %}
 
 
@@ -14,7 +15,8 @@
 {% endblock %}
 
 {% block content %}
-    <table class="table">
+    <h3>Buddy details</h3>
+    <table class="table table-hover">
         <tr><th>UID</th><td>{{ user.uid }}</td></tr>
         <tr><th>Type</th><td>{{ user.type.name }}</td></tr>
         <tr><th>Nick</th><td>{{ user.nickname }}</td></tr>
@@ -24,17 +26,34 @@
         <tr><th>Born</th><td>{{ user.born|date:"Y" }}</td></tr>
         <tr><th>IRL</th><td>{{ user.irl }}</td></tr>
         <tr><th>Comment</th><td>{{ user.comment }}</td></tr>
-        <tr><th>Balance</th><td> <a href="{% url 'account_detail' user.logic_account.id %}">{{ balance }}</a></td></tr>
+        <tr><th>Account balance</th><td> <a href="{% url 'account_detail' user.logic_account.id %}">{{ balance }}</a></td></tr>
         {% for principal in principals %}
             <tr><th>{{ principal.type.name }} {{ principal.name }}</th><td>{{ principal.value }}</td></tr>
 
         {% endfor %}
-        <tr><th>Events</th><td>
-            {% for event in events %}
-                {{ event.date|date:'Y-m-d' }}{% if event.until %} - {{ event.until|date:'Y-m-d' }}{% endif %}: <i>{{ event.type.name }}</i> {% if event.reason %} {{ event.reason }} {% endif %}
-                <br/>
-            {% endfor %}
-        </td></tr>
+        <tr><th>Events</th>
+            <td>
+
+
+                <table class="table table-condensed table-striped table-bordered">
+                    <tr>
+                        <th>date</th>
+                        <th>until</th>
+                        <th>type</th>
+                        <th>comment</th>
+                    </tr>
+
+                    {% for event in events %}
+                        <tr>
+                            <td>{{ event.date|date:'Y-m-d' }}</td>
+                            <td>{% if event.until %}{{ event.until|date:'Y-m-d' }}{% endif %}</td>
+                            <td>{{ event.type.name }}</td>
+                            <td>{% if event.reason %} {{ event.reason }} {% endif %}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </td>
+        </tr>
     </table>
 {% endblock %}
 

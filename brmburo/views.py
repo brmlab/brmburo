@@ -1,3 +1,4 @@
+from brmburo.models import LogicTransaction, LogicTransactionSplit, LogicAccount, BuddyEvent, SecurityPrincipal, Buddy
 from brmburo.transactions import account_sum
 
 __author__ = 'pborky'
@@ -78,9 +79,14 @@ def account_list(request, **kw):
         'accounts': ( (account,account_sum(account)) for account in  LogicAccount.objects.all() ),
         }
 
+@view_GET( r'^transaction/list$', template = 'transaction_list.html')
+def transaction_list(request, **kw):
+    return {
+        'transactions': ((transaction,LogicTransactionSplit.objects.filter(transaction=transaction).count()) for transaction in LogicTransaction.objects.all().order_by('time') ),
+        }
+
 @view_GET( r'^roster/user/(?P<uid>[0-9]*)$', template = 'roster_user.html')
 def roster_user(request, uid, **kw):
-    from models import Buddy,BuddyEvent,SecurityPrincipal
     buddy = Buddy.objects.get(uid=int(uid))
     return {
         'user': buddy,
@@ -91,10 +97,20 @@ def roster_user(request, uid, **kw):
 
 @view_GET( r'^account/detail/(?P<id>[0-9]*)$', template = 'account_detail.html')
 def account_detail(request, id, **kw):
-    from models import LogicAccount,LogicTransactionSplit
     account = LogicAccount.objects.get(id=int(id))
+    buddy = Buddy.objects.filter(logic_account=account)
     return {
         'account': account,
+        'buddy': buddy[0] if buddy.exists() else None,
         'balance': account_sum(account),
-        'transactions': LogicTransactionSplit.objects.filter(account=account).order_by('transaction__time'),
+        'splits': LogicTransactionSplit.objects.filter(account=account).order_by('transaction__time'),
+        }
+
+
+@view_GET( r'^transaction/detail/(?P<id>[0-9]*)$', template = 'transaction_detail.html')
+def transaction_detail(request, id, **kw):
+    transaction = LogicTransaction.objects.get(id=id)
+    return {
+        'transaction': transaction,
+        'splits': LogicTransactionSplit.objects.filter(transaction=transaction)
         }

@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block body_class %}{{ block.super }} home{% endblock %}
+
+ {% block menu %}
+    <li><a href="{% url 'home' %}">Home</a></li>
+    <li><a href="{% url 'roster' %}">Roster</a></li>
+    <li><a href="{% url 'account_list' %}">Accounts</a></li>
+     <li class="active"><a href="{% url 'transaction_list' %}">Transactions</a></li>
+{% endblock %}
+
+{% block sidebar %}
+{% endblock %}
+
+{% block content %}
+    <h3>Transactions</h3>
+    <table class="table table-hover" style="display: table">
+        <tr>
+            <th>id</th>
+            <th>date</th>
+            <th>comment</th>
+        </tr>
+        {% for transaction,splits in transactions %}
+            <tr>
+                <td><a href="{% url 'transaction_detail' transaction.id %}">#{{ transaction.id }}</a></td>
+                <td>{{ transaction.time|date:'Y-m-d' }}</td>
+                <td>{{ transaction.comment }}</td>
+            </tr>
+        {% endfor %}
+
+    </table>
+{% endblock %}
+
+{% block javascript %}
+{% endblock  %}
+
+{% block footer %}
+
+{% endblock  %}

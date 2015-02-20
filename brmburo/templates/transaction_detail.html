@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block body_class %}{{ block.super }} home{% endblock %}
+
+{% block menu %}
+    <li><a href="{% url 'home' %}">Home</a></li>
+    <li><a href="{% url 'roster' %}">Roster</a></li>
+    <li><a href="{% url 'account_list' %}">Accounts</a></li>
+    <li class="active"><a href="{% url 'transaction_list' %}">Transactions</a></li>
+{% endblock %}
+
+{% block sidebar %}
+{% endblock %}
+
+{% block content %}
+    <h3>Transaction details</h3>
+    <table class="table table-hover">
+        <tr><th>ID</th><td>#{{ transaction.id }}</td></tr>
+        <tr><th>Date</th><td>{{ transaction.time|date:'Y-m-d' }}</td></tr>
+        <tr><th>Comment</th><td>{{ transaction.comment }}</td></tr>
+        <tr><th>Splits</th>
+            <td>
+                <table class="table table-condensed table-striped table-bordered">
+                    <tr>
+                        <th>date</th>
+                        <th>side</th>
+                        <th>amount</th>
+                        <th>currency</th>
+                        <th>account</th>
+                        <th>comment</th>
+                    </tr>
+                    {% for split in splits %}
+                        <tr>
+                            <td>{{ split.transaction.time|date:'Y-m-d' }}</td>
+                            <td>{% if split.side < 0 %}debit{% else %}credit{% endif %}</td>
+                            <td>{{ split.amount }}</td>
+                            <td>{{ split.account.currency.symbol }}</td>
+                            <td><a href="{% url 'account_detail' split.account.id %}">{{ split.account.symbol }}</a></td>
+                            <td>{% if split.comment %}<i>{{ split.comment }}</i>{% endif %}</td>
+
+                        </tr>
+                    {% endfor %}
+                </table>
+            </td>
+        </tr>
+    </table>
+{% endblock %}
+
+{% block javascript %}
+{% endblock  %}
+
+{% block footer %}
+{% endblock  %}

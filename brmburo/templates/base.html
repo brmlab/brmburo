@@ -34,6 +34,7 @@
                             <li class="active"><a href="{% url 'home' %}">Home</a></li>
                             <li><a href="{% url 'roster' %}">Roster</a></li>
                             <li><a href="{% url 'account_list' %}">Accounts</a></li>
+                            <li><a href="{% url 'transaction_list' %}">Transactions</a></li>
                         {% endblock %}
                     </ul>
                     {% if user.is_authenticated %}
