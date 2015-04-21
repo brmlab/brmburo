@@ -10,6 +10,7 @@ from models import LogicAccount, LogicTransaction, LogicTransactionSplit, Buddy,
 logger = logging.getLogger(__name__)
 
 DUES = LogicAccount.objects.get(symbol='dues')
+DISCOUNTS = LogicAccount.objects.get(symbol='discounts')
 INCOME = LogicAccount.objects.get(symbol='income')
 CONVERSE = dict(
     CZK = LogicAccount.objects.get(symbol='czk', type__symbol='converse'),
@@ -33,30 +34,24 @@ def get_discount(buddy, time=None):
     if not time:
         time = now()
         # get valid discount events and calculate discount
-    be = BuddyEvent.objects.filter(
-        buddy=buddy,
-        date__lte=time,        # valid now
-        until__gte=time,
-        until__isnull=False,
-        type__symbol__startswith='discount',
+    be =  BuddyEvent.objects.filter(
+        Q(buddy=buddy, date__lte=time,type__symbol__startswith='discount') & 
+        (Q(until__isnull=True) | Q(until__gte=time))
     )
     if be.exists():
         if be.count() > 1:
             raise Exception('Only one concurent discount is allowed.')
         return DISCOUNT_FACTORS.get(be[0].type.symbol, 1.)
-    return 1
+    return 1.
 
 def is_valid_member(buddy, time=None):
     if not time:
         time = now()
 
     # check if suspended
-    be = BuddyEvent.objects.filter(
-        buddy=buddy,
-        date__lte=time,        # valid now
-        until__gte=time,
-        until__isnull=False,
-        type__symbol='suspend',
+    be =  BuddyEvent.objects.filter(
+        Q(buddy=buddy, date__lte=time,type__symbol='suspend') &
+        (Q(until__isnull=True) | Q(until__gte=time))
     )
     if be.exists():
         if be.count() > 1:
