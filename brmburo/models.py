@@ -165,7 +165,7 @@ class LogicTransactionSplit(Model):
 
 
 class BankAccount(Model):
-    account_number = CharField(max_length=20, verbose_name='Bank Account Number')
+    account_number = CharField(max_length=30, verbose_name='Bank Account Number')
     bank_code = CharField(max_length=20, verbose_name='Bank Code')
     account_name  = CharField(max_length=100, verbose_name='Bank Account Name',null=True,blank=True)
     currency = ForeignKey(Currency, null=True, blank=True)
