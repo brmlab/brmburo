@@ -2,6 +2,7 @@ from decimal import Decimal
 import logging
 
 from django.utils.timezone import now
+from django.db.models import Q
 
 from datetime import timedelta
 from models import LogicAccount, LogicTransaction, LogicTransactionSplit, Buddy, BuddyEvent
@@ -10,7 +11,6 @@ from models import LogicAccount, LogicTransaction, LogicTransactionSplit, Buddy,
 logger = logging.getLogger(__name__)
 
 DUES = LogicAccount.objects.get(symbol='dues')
-DISCOUNTS = LogicAccount.objects.get(symbol='discounts')
 INCOME = LogicAccount.objects.get(symbol='income')
 CONVERSE = dict(
     CZK = LogicAccount.objects.get(symbol='czk', type__symbol='converse'),
