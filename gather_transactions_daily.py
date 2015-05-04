@@ -44,10 +44,10 @@ for token in settings.BANK_TOKENS:
             logger.warning('Transaction %s already here.'%tid)
             continue
 
-        if 'account_number' not in tran or  'bank_code' not in  tran:
+        if 'account_number' not in tran or ( 'bank_code' not in  tran and 'bic' not in tran ):
             continue
 
-        acc,created = BankAccount.objects.get_or_create(account_number=tran['account_number'], bank_code=tran['bank_code'])
+        acc,created = BankAccount.objects.get_or_create(account_number=tran['account_number'], bank_code=tran['bic'] if 'bic' in tran else tran['bank_code'])
         if created:
             acc.account_name = tran.get('account_name')
             acc.save()
@@ -75,10 +75,11 @@ for token in settings.BANK_TOKENS:
 
 
         t.save()
+        logger.info(u'Imported transaction %s.' % t)
 
         lt, b = payment_income(t)
         if lt is not None and b is not None:
-            template = u'Incomming payment %(amount)0.2f[%(curr1)s] from @%(nickname)s accounted as transaction #%(tid)d. New balance for @%(nickname)s is %(balance)s %(curr2)s.'
+            template = u'Paired incomming payment %(amount)0.2f[%(curr1)s] from @%(nickname)s accounted as transaction #%(tid)d. New balance for @%(nickname)s is %(balance)s %(curr2)s.'
             logger.info(template % dict(
                 amount = t.amount,
                 curr1 = t.currency.symbol,
@@ -87,8 +88,9 @@ for token in settings.BANK_TOKENS:
                 tid = lt.id,
                 balance = account_sum(b),
             ))
+        else:
+            logger.info(u'Not paired.')
 
 
-        logger.info('Imported transaction %s.' % t)
 
 
