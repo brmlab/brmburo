@@ -73,7 +73,7 @@ def is_valid_member(buddy, time=None):
         if be.type.symbol == 'terminate':
             return current_month # pays for last month
 
-def payment_due(buddy, time=None, limit=28.):
+def payment_due(buddy, time=None, limit=0.):
     if not time:
       time = now()
 
