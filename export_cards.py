@@ -4,7 +4,7 @@ import os; os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'brmburo.settings')
 import logging
 logger = logging.getLogger(__name__)
 from django.utils.timezone import now
-from brmburo.models import *
+from brmburo.models import SecurityPrincipal
 
 
 n = now()
