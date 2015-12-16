@@ -8,6 +8,6 @@ from brmburo.models import SecurityPrincipal
 
 
 n = now()
-for sp in SecurityPrincipal.objects.filter(since__lte=n,until__gt=n,buddy__type__symbol='member'):
+for sp in SecurityPrincipal.objects.filter(since__lte=n,until__gt=n,buddy__type__symbol='member').order_by('buddy__nickname'):
         print sp.buddy.nickname, sp.value
 
