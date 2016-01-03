@@ -23,4 +23,5 @@ tmp/
 *.so
 *.egg
 *.egg-info
-
+.Python
+pip-selfcheck.json
