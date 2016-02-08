@@ -29,7 +29,7 @@
             <tr>
                 <th>Transactions</th>
                 <td>
-                    <table class="table table-condensed table-striped table-bordered">
+                    <table class="table table-condensed table-bordered">
                         <tr>
                             <th>date</th>
                             <th>amount</th>
@@ -38,7 +38,7 @@
                             <th>comment</th>
                         </tr>
                         {% for split in splits %}
-                            <tr>
+                            <tr class={% if split.side < 0 %}warning{% else %}info{% endif %}>
                                 <td>{{ split.transaction.time|date:'Y-m-d' }}</td>
                                 <td>{{ split.amount_ }}</td>
                                 <td>{{ split.account.currency.symbol }}</td>

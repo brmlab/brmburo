@@ -89,10 +89,29 @@ def transaction_list(request, **kw):
 @view_GET( r'^roster/user/(?P<uid>[0-9]*)$', template = 'roster_user.html')
 def roster_user(request, uid, **kw):
     buddy = Buddy.objects.get(uid=int(uid))
+
+    history = []
+
+    for event in BuddyEvent.objects.filter(buddy=buddy).order_by('date'):
+        history.append(dict(date=event.date,type=event.type.name,reason=event.reason,color='success'))
+        if event.until:
+            history.append(dict(date=event.until,type=event.type.name,reason='END of %s %s' % (event.type.name, event.reason),color='error'))
+
+    for split in LogicTransactionSplit.objects.filter(account=buddy.logic_account):
+        history.append(dict(
+            date=split.transaction.time.date(),
+            type='debit' if split.side < 0 else 'credit',
+            amount=split.amount_,
+            currency=split.account.currency.symbol,
+            reason=split.transaction.comment,
+            color='warning' if split.side < 0 else 'info'
+        ))
+
     return {
         'user': buddy,
         'balance': account_sum(buddy),
         'events': BuddyEvent.objects.filter(buddy=buddy).order_by('date'),
+        'history': sorted(history, key=lambda h: h.get('date')),
         'principals': SecurityPrincipal.objects.filter(buddy=buddy).order_by('since'),
         }
 

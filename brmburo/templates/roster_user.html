@@ -18,7 +18,16 @@
     <h3>Buddy details</h3>
     <table class="table table-hover">
         <tr><th>UID</th><td>{{ user.uid }}</td></tr>
-        <tr><th>Type</th><td>{{ user.type.name }}</td></tr>
+        <tr><th>Type</th>
+            <td>
+                {{ user.type.name }}
+                <div class="btn-group pull-right">
+                    <button class=" btn btn-info">Discount</button>
+                    <button class=" btn btn-warning">Suspend</button>
+                    <button class=" btn btn-danger">Terminate</button>
+                </div>
+            </td>
+        </tr>
         <tr><th>Nick</th><td>{{ user.nickname }}</td></tr>
         <tr><th>Full Name</th><td>{{ user.first_name }} {{ user.middle_name }} {{ user.surname }}</td></tr>
         <tr><th>Email</th><td>{{ user.email }}</td></tr>
@@ -34,19 +43,21 @@
         {% if events.exists %}
             <tr><th>Events</th>
                 <td>
-                    <table class="table table-condensed table-striped table-bordered">
+                    <table class="table table-condensed table-bordered">
                         <tr>
                             <th>date</th>
-                            <th>until</th>
                             <th>type</th>
+                            <th>amount</th>
+                            <th>currency</th>
                             <th>comment</th>
                         </tr>
 
-                        {% for event in events %}
-                            <tr>
+                        {% for event in history %}
+                            <tr class={{ event.color }}>
                                 <td>{{ event.date|date:'Y-m-d' }}</td>
-                                <td>{% if event.until %}{{ event.until|date:'Y-m-d' }}{% endif %}</td>
-                                <td>{{ event.type.name }}</td>
+                                <td>{{ event.type }}</td>
+                                <td>{{ event.amount }}</td>
+                                <td>{{ event.currency }}</td>
                                 <td>{% if event.reason %} {{ event.reason }} {% endif %}</td>
                             </tr>
                         {% endfor %}
