@@ -35,7 +35,7 @@ def get_discount(buddy, time=None):
         time = now()
         # get valid discount events and calculate discount
     be =  BuddyEvent.objects.filter(
-        Q(buddy=buddy, date__lte=time,type__symbol__startswith='discount') & 
+        Q(buddy=buddy, date__lte=time,type__symbol__startswith='discount') &
         (Q(until__isnull=True) | Q(until__gte=time))
     )
     if be.exists():
@@ -73,9 +73,9 @@ def is_valid_member(buddy, time=None):
         if be.type.symbol == 'terminate':
             return current_month # pays for last month
 
-def payment_due(buddy, time=None, limit=0.):
+def payment_due(buddy, time=None, limit=False):
     if not time:
-      time = now()
+        time = now()
 
     if not is_valid_member(buddy, time):
         return None, buddy
@@ -85,15 +85,22 @@ def payment_due(buddy, time=None, limit=0.):
     if buddy_logic_account is None:
         return None, None
 
-    # if already issued in past <limit> days return that transaction
-    if limit:
-      lts = LogicTransactionSplit.objects.filter(
-          account = buddy_logic_account,
-          transaction__time__gt=time-timedelta(limit),
-          side=1,  # credit
-      )
-      if lts.exists():
-          return lts[0].transaction, buddy
+    # if already issued in past <limit> days or in given month return that transaction
+    if not limit:
+        lts = LogicTransactionSplit.objects.filter(
+            account=buddy_logic_account,
+            transaction__time__year=time.year,
+            transaction__time__month=time.month,
+            side=-1,  # debit
+        )
+    else:
+        lts = LogicTransactionSplit.objects.filter(
+            account=buddy_logic_account,
+            transaction__time__gt=time - timedelta(limit),
+            side=-1,  # debit
+        )
+    if lts.exists():
+        return lts[0].transaction, buddy
 
     ammount = PAYMENT.get('CZK')
 
