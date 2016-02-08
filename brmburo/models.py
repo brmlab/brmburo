@@ -115,7 +115,7 @@ class Currency(Model):
         verbose_name = "Currency"
         verbose_name_plural = "Currencies"
 
-class LogicAccountType(Model): # bank, income, expense, credit
+class LogicAccountType(Model):  # active, pasive, expense, income, bank
     name = CharField(max_length=100, verbose_name='Logic Account Type Name')
     symbol = CharField(max_length=10, unique=True)
     parent = ForeignKey('LogicAccountType', blank=True, null=True)
@@ -155,7 +155,7 @@ class LogicTransactionSplit(Model):
     amount = DecimalField(max_digits=8, decimal_places=2)
     comment = CharField(max_length=255, verbose_name='Transaction Split Description',null=True,blank=True)
     def amount_(self):
-        return self.side * self.amount
+        return (self.side if self.amount else 1) * self.amount
     def __unicode__(self):
         template = u'%s %s %.2f (%s)'
         return template % (self.account, self.side, self.amount, self.comment)
