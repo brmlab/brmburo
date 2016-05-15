@@ -1,6 +1,7 @@
 __author__ = 'pborky'
 
 import types
+import random
 from django.contrib import messages
 from django.views.decorators import http
 from django.views.decorators.http import require_GET, require_POST
@@ -179,3 +180,31 @@ def view_GET(*args, **kwargs):
 def view_POST(*args, **kwargs):
     decorators = kwargs.pop('decorators', ())
     return view(*args, decorators=(require_POST,)+decorators , **kwargs)
+
+def rabin_miller(num):
+    """
+    :param num: number to test
+    :return: Returns if number is a prime according to Rabin-Miller primality test
+    """
+
+    s = num - 1
+    t = 0
+    while s % 2 == 0:
+        # keep halving s while it is even (and use t
+        # to count how many times we halve s)
+        s = s // 2
+        t += 1
+
+    for trials in range(5): # try to falsify num's primality 5 times
+        a = random.randrange(2, num - 1)
+        v = pow(a, s, num)
+        if v != 1: # this test does not apply if v is 1.
+            i = 0
+            while v != (num - 1):
+                if i == t - 1:
+                    return False
+                else:
+                    i = i + 1
+                    v = (v ** 2) % num
+    return True
+

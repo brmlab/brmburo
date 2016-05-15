@@ -6,8 +6,11 @@ import tinymce.urls
 
 from .helpers import autoregister
 from .views import login,logout,login,do_login, roster, roster_user, account_detail, account_list, transaction_list, transaction_detail
+from brmburo.models import Buddy
+from brmburo.widgets import BuddyAdmin
 
 admin.autodiscover()
+admin.site.register(Buddy, BuddyAdmin)
 
 autoregister('brmburo')
 
