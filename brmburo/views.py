@@ -110,6 +110,7 @@ def transaction_list(request, **kw):
 
 @view_GET( r'^roster/user/(?P<uid>[0-9]*)$', template = 'roster_user.html')
 def roster_user(request, uid, **kw):
+    # TODO: this will throw exception if UID doesn't exist, needs better handling
     buddy = Buddy.objects.get(uid=int(uid))
 
     # allow only superuser if buddy has no 'user' field set that would allow anyone to view it
