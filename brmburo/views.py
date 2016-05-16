@@ -90,6 +90,14 @@ def transaction_list(request, **kw):
 def roster_user(request, uid, **kw):
     buddy = Buddy.objects.get(uid=int(uid))
 
+    # allow only superuser if buddy has no 'user' field set that would allow anyone to view it
+    # allow only user specified in admin or superuser if 'user' is specified
+    if not request.user.is_superuser and (not buddy.user or buddy.user.username != request.user.username):
+        return {
+            'authorized': False,
+            'user': buddy,
+        }
+
     history = []
 
     for event in BuddyEvent.objects.filter(buddy=buddy).order_by('date'):
@@ -108,6 +116,7 @@ def roster_user(request, uid, **kw):
         ))
 
     return {
+        'authorized': True,
         'user': buddy,
         'balance': account_sum(buddy),
         'events': BuddyEvent.objects.filter(buddy=buddy).order_by('date'),
