@@ -13,39 +13,43 @@
 {% endblock %}
 
 {% block content %}
-    <h3>Transaction details</h3>
-    <table class="table table-hover">
-        <tr><th>ID</th><td>#{{ transaction.id }}</td></tr>
-        <tr><th>Date</th><td>{{ transaction.time|date:'Y-m-d' }}</td></tr>
-        <tr><th>Comment</th><td>{{ transaction.comment }}</td></tr>
-        {% if splits.exists %}
-            <tr>
-                <th>Splits</th>
-                <td>
-                    <table class="table table-condensed table-bordered">
-                        <tr>
-                            <th>date</th>
-                            <th>side</th>
-                            <th>amount</th>
-                            <th>currency</th>
-                            <th>account</th>
-                            <th>comment</th>
-                        </tr>
-                        {% for split in splits %}
-                            <tr class={% if split.side < 0 %}warning{% else %}info{% endif %}>
-                                <td>{{ split.transaction.time|date:'Y-m-d' }}</td>
-                                <td>{% if split.side < 0 %}debit{% else %}credit{% endif %}</td>
-                                <td>{{ split.amount }}</td>
-                                <td>{{ split.account.currency.symbol }}</td>
-                                <td><a href="{% url 'account_detail' split.account.id %}">{{ split.account.symbol }}</a></td>
-                                <td>{% if split.comment %}<i>{{ split.comment }}</i>{% endif %}</td>
+    {% if not authorized %}
+        <h3>You are not authorized to view transaction details.</h3>
+    {% else %}
+        <h3>Transaction details</h3>
+        <table class="table table-hover">
+            <tr><th>ID</th><td>#{{ transaction.id }}</td></tr>
+            <tr><th>Date</th><td>{{ transaction.time|date:'Y-m-d' }}</td></tr>
+            <tr><th>Comment</th><td>{{ transaction.comment }}</td></tr>
+            {% if splits.exists %}
+                <tr>
+                    <th>Splits</th>
+                    <td>
+                        <table class="table table-condensed table-bordered">
+                            <tr>
+                                <th>date</th>
+                                <th>side</th>
+                                <th>amount</th>
+                                <th>currency</th>
+                                <th>account</th>
+                                <th>comment</th>
                             </tr>
-                        {% endfor %}
-                    </table>
-                </td>
-            </tr>
-        {% endif %}
-    </table>
+                            {% for split in splits %}
+                                <tr class={% if split.side < 0 %}warning{% else %}info{% endif %}>
+                                    <td>{{ split.transaction.time|date:'Y-m-d' }}</td>
+                                    <td>{% if split.side < 0 %}debit{% else %}credit{% endif %}</td>
+                                    <td>{{ split.amount }}</td>
+                                    <td>{{ split.account.currency.symbol }}</td>
+                                    <td><a href="{% url 'account_detail' split.account.id %}">{{ split.account.symbol }}</a></td>
+                                    <td>{% if split.comment %}<i>{{ split.comment }}</i>{% endif %}</td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    </td>
+                </tr>
+            {% endif %}
+        </table>
+    {% endif %}
 {% endblock %}
 
 {% block javascript %}

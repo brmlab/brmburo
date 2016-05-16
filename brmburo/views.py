@@ -167,8 +167,14 @@ def account_detail(request, id, **kw):
 
 @view_GET( r'^transaction/detail/(?P<id>[0-9]*)$', template = 'transaction_detail.html')
 def transaction_detail(request, id, **kw):
+    # only superuser can view transaction details - it could be more finegrained, but it's like this for now
+    if not request.user.is_superuser:
+        return {
+            'authorized': False,
+        }
     transaction = LogicTransaction.objects.get(id=id)
     return {
+        'authorized': True,
         'transaction': transaction,
         'splits': LogicTransactionSplit.objects.filter(transaction=transaction)
         }
