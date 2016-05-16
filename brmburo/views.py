@@ -82,7 +82,14 @@ def account_list(request, **kw):
 
 @view_GET( r'^transaction/list$', template = 'transaction_list.html')
 def transaction_list(request, **kw):
+    # only superuser can view all transactions
+    if not request.user.is_superuser:
+        return {
+            'authorized': False,
+        }
+
     return {
+        'authorized': True,
         'transactions': ((transaction,LogicTransactionSplit.objects.filter(transaction=transaction).count()) for transaction in LogicTransaction.objects.all().order_by('time') ),
         }
 
