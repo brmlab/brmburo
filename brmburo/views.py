@@ -76,7 +76,15 @@ def account_list(request, **kw):
     def getbuddy(account):
         buddy = Buddy.objects.filter(logic_account=account)
         return buddy[0] if buddy.exists() else None
+
+    # only superuser can view all accounts (they contain balances etc.)
+    if not request.user.is_superuser:
+        return {
+            'authorized': False,
+        }
+
     return {
+        'authorized': True,
         'accounts': ( (account,account_sum(account),getbuddy(account)) for account in  LogicAccount.objects.all() ),
         }
 
