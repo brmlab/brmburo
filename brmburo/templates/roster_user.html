@@ -24,11 +24,13 @@
             <tr><th>Type</th>
                 <td>
                     {{ user.type.name }}
-                    <div class="btn-group pull-right">
-                        <button class=" btn btn-info">Discount</button>
-                        <button class=" btn btn-warning">Suspend</button>
-                        <button class=" btn btn-danger">Terminate</button>
-                    </div>
+                    {% if can_edit %}
+                        <div class="btn-group pull-right">
+                            <button class=" btn btn-info">Discount</button>
+                            <button class=" btn btn-warning">Suspend</button>
+                            <button class=" btn btn-danger">Terminate</button>
+                        </div>
+                    {% endif %}
                 </td>
             </tr>
             <tr><th>Nick</th><td>{{ user.nickname }}</td></tr>

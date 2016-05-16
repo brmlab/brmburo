@@ -145,6 +145,7 @@ def roster_user(request, uid, **kw):
         'events': BuddyEvent.objects.filter(buddy=buddy).order_by('date'),
         'history': sorted(history, key=lambda h: h.get('date')),
         'principals': SecurityPrincipal.objects.filter(buddy=buddy).order_by('since'),
+        'can_edit': request.user.is_superuser,
         }
 
 @view_GET( r'^account/detail/(?P<id>[0-9]*)$', template = 'account_detail.html')
