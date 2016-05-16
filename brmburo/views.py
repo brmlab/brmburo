@@ -66,7 +66,14 @@ def logout(request, forms):
 def roster(request, **kw):
     from models import Buddy
 
+    # only superuser can view full roster (it contains balances etc.)
+    if not request.user.is_superuser:
+        return {
+            'authorized': False,
+        }
+
     return {
+        'authorized': True,
         'users':
             ((buddy,account_sum(buddy)) for buddy in Buddy.objects.all().order_by('nickname')),
     }
