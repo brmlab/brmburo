@@ -148,9 +148,16 @@ def roster_user(request, uid, **kw):
 
 @view_GET( r'^account/detail/(?P<id>[0-9]*)$', template = 'account_detail.html')
 def account_detail(request, id, **kw):
+    # only superuser can view account details - it could be more finegrained, but it's like this for now
+    if not request.user.is_superuser:
+        return {
+            'authorized': False,
+        }
+
     account = LogicAccount.objects.get(id=int(id))
     buddy = Buddy.objects.filter(logic_account=account)
     return {
+        'authorized': True,
         'account': account,
         'buddy': buddy[0] if buddy.exists() else None,
         'balance': account_sum(account),

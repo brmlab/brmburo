@@ -13,44 +13,48 @@
 {% endblock %}
 
 {% block content %}
-    <h3>Account details</h3>
-    <table class="table  table-hover">
-        <tr><th>ID</th><td>#{{ account.id }}</td></tr>
-        <tr><th>Name</th><td>{{ account.name }}</td></tr>
-        <tr><th>Symbol</th>
-            <td>
-                {% if buddy %}<a href="{% url 'roster_user' buddy.uid %}">@{{ buddy.nickname }}</a>{% else %}{{ account.symbol }}{% endif %}
-            </td>
-        </tr>
-        <tr><th>Currency</th><td>{{ account.currency.symbol }}</td></tr>
-        <tr><th>Type</th><td>{{ account.type.name }}</td></tr>
-        <tr><th>Balance</th><td>{{ balance}}</td></tr>
-        {% if splits.exists %}
-            <tr>
-                <th>Transactions</th>
+    {% if not authorized %}
+        <h3>You are not authorized to view account details.</h3>
+    {% else %}
+        <h3>Account details</h3>
+        <table class="table  table-hover">
+            <tr><th>ID</th><td>#{{ account.id }}</td></tr>
+            <tr><th>Name</th><td>{{ account.name }}</td></tr>
+            <tr><th>Symbol</th>
                 <td>
-                    <table class="table table-condensed table-bordered">
-                        <tr>
-                            <th>date</th>
-                            <th>amount</th>
-                            <th>currency</th>
-                            <th>transaction</th>
-                            <th>comment</th>
-                        </tr>
-                        {% for split in splits %}
-                            <tr class={% if split.side < 0 %}warning{% else %}info{% endif %}>
-                                <td>{{ split.transaction.time|date:'Y-m-d' }}</td>
-                                <td>{{ split.amount_ }}</td>
-                                <td>{{ split.account.currency.symbol }}</td>
-                                <td><a href="{% url 'transaction_detail' split.transaction.id %}">#{{ split.transaction.id }}</a></td>
-                                <td><i>{% if split.comment %}{{ split.comment }}{% else %}{{ split.transaction.comment }}{% endif %}</i></td>
-                            </tr>
-                        {% endfor %}
-                    </table>
+                    {% if buddy %}<a href="{% url 'roster_user' buddy.uid %}">@{{ buddy.nickname }}</a>{% else %}{{ account.symbol }}{% endif %}
                 </td>
             </tr>
-        {% endif %}
-    </table>
+            <tr><th>Currency</th><td>{{ account.currency.symbol }}</td></tr>
+            <tr><th>Type</th><td>{{ account.type.name }}</td></tr>
+            <tr><th>Balance</th><td>{{ balance}}</td></tr>
+            {% if splits.exists %}
+                <tr>
+                    <th>Transactions</th>
+                    <td>
+                        <table class="table table-condensed table-bordered">
+                            <tr>
+                                <th>date</th>
+                                <th>amount</th>
+                                <th>currency</th>
+                                <th>transaction</th>
+                                <th>comment</th>
+                            </tr>
+                            {% for split in splits %}
+                                <tr class={% if split.side < 0 %}warning{% else %}info{% endif %}>
+                                    <td>{{ split.transaction.time|date:'Y-m-d' }}</td>
+                                    <td>{{ split.amount_ }}</td>
+                                    <td>{{ split.account.currency.symbol }}</td>
+                                    <td><a href="{% url 'transaction_detail' split.transaction.id %}">#{{ split.transaction.id }}</a></td>
+                                    <td><i>{% if split.comment %}{{ split.comment }}{% else %}{{ split.transaction.comment }}{% endif %}</i></td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    </td>
+                </tr>
+            {% endif %}
+        </table>
+    {% endif %}
 {% endblock %}
 
 {% block javascript %}
