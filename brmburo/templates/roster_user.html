@@ -15,7 +15,9 @@
 {% endblock %}
 
 {% block content %}
-    {% if not authorized %}
+    {% if no_such_uid %}
+        <h3>No such uid: {{ uid }}.</h3>
+    {% elif not authorized %}
         <h3>You are not authorized to view {{ user.nickname }}'s details.</h3>
     {% else %}
         <h3>Buddy details</h3>
