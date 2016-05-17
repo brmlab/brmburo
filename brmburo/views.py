@@ -115,16 +115,14 @@ def transaction_list(request, **kw):
 @view_GET( r'^roster/user/(?P<uid>[0-9]*)$', template = 'roster_user.html')
 @login_required
 def roster_user(request, uid, **kw):
-    buddys = Buddy.objects.filter(uid=int(uid))
-
-    if not buddys:
+    try:
+        buddy = Buddy.objects.get(uid=int(uid))
+    except Buddy.DoesNotExist:
         return {
             'no_such_uid': True,
             'authorized': False,
             'uid': uid,
         }
-
-    buddy = buddys[0]
 
     # allow only superuser if buddy has no 'user' field set that would allow anyone to view it
     # allow only user specified in admin or superuser if 'user' is specified
