@@ -5,6 +5,8 @@ from passlib.hash import md5_crypt
 from .models import DokuwikiUser
 from .settings.local import DOKUWIKI_USERS_FILE
 
+logger = logging.getLogger(__name__)
+
 class DokuwikiAuthBackend(object):
 
     def authenticate(self, username, password):
@@ -27,6 +29,7 @@ class DokuwikiAuthBackend(object):
                             continue
 
                         hash = parts[1]
+                        email = parts[3]
                         roles = parts[4].split(",")
 
                         is_member = "member" in roles
@@ -35,10 +38,16 @@ class DokuwikiAuthBackend(object):
 
                         try:
                             if md5_crypt.verify(password, hash):
-                                user = DokuwikiUser(username, is_member, is_council, is_admin)
+                                try:
+                                    user = DokuwikiUser.objects.get(username=username)
+                                except DokuwikiUser.DoesNotExist:
+                                    user = DokuwikiUser.objects.create_user(username=username, email=email, password="",
+                                        is_member=is_member, is_council=is_council, is_admin=is_admin)
+
                                 return user
 
                         except ValueError:
+                            logging.exception("Cannot verify user")
                             continue
         except OSError, IOError:
             logging.exception("Cannot read dokuwiki users file, bailing.")
@@ -49,4 +58,5 @@ class DokuwikiAuthBackend(object):
     def get_user(self, user_id):
         if user_id is None:
             return None
-        raise NotImplementedError
+        user = DokuwikiUser.objects.get(pk=user_id)
+        return user
