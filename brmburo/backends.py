@@ -2,7 +2,7 @@ import re
 import logging
 from passlib.hash import md5_crypt
 
-from .models import DokuwikiUser
+from django.contrib.auth.models import User
 from .settings.local import DOKUWIKI_USERS_FILE
 
 logger = logging.getLogger(__name__)
@@ -39,10 +39,12 @@ class DokuwikiAuthBackend(object):
                         try:
                             if md5_crypt.verify(password, hash):
                                 try:
-                                    user = DokuwikiUser.objects.get(username=username)
-                                except DokuwikiUser.DoesNotExist:
-                                    user = DokuwikiUser.objects.create_user(username=username, email=email, password="",
-                                        is_member=is_member, is_council=is_council, is_admin=is_admin)
+                                    user = User.objects.get(username=username)
+                                except User.DoesNotExist:
+                                    if is_admin:
+                                        user = User.objects.create_superuser(username=username, email=email, password="")
+                                    else:
+                                        user = User.objects.create_user(username=username, email=email, password="")
 
                                 return user
 
@@ -58,5 +60,5 @@ class DokuwikiAuthBackend(object):
     def get_user(self, user_id):
         if user_id is None:
             return None
-        user = DokuwikiUser.objects.get(pk=user_id)
+        user = User.objects.get(pk=user_id)
         return user

@@ -214,22 +214,6 @@ class BankTransaction(Model):
 # pasky        CREDIT 500   (if pasky's balance ends up positive, he owes us money)
 # prepaid_dues DEBIT  500   (if members globally don't pay their dues, this account could get negative)
 
-class DokuwikiUser(AbstractBaseUser):
-    USERNAME_FIELD = "username"
-    username = CharField(max_length=128)
-    email = CharField(max_length=128)
-    is_member = BooleanField()
-    is_council = BooleanField()
-    is_admin = BooleanField()
-    date_joined = DateTimeField()
-    is_active = BooleanField(default=True)
-    is_admin = BooleanField(default=False)
-    is_staff = BooleanField(default=False)
-    is_superuser = BooleanField(default=False)
-    class Meta:
-        verbose_name = "User for authentication from dokuwiki"
-    objects = UserManager()
-
 
 class SiteResource(Model): # some resource strings
     name = CharField(max_length=100, verbose_name='Name')
