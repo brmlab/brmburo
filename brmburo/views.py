@@ -121,9 +121,13 @@ def roster_user(request, uid, **kw):
 
     buddy = buddys[0]
 
+    # Old way - look at user is set in buddy's settings
     # allow only superuser if buddy has no 'user' field set that would allow anyone to view it
     # allow only user specified in admin or superuser if 'user' is specified
-    if not request.user.is_superuser and (not buddy.user or buddy.user.username != request.user.username):
+    #if not request.user.is_superuser and (not buddy.user or buddy.user.username != request.user.username):
+
+    # New way - do not look at buddy's settings, show roster detail if login name and buddy name match
+    if not request.user.is_superuser and buddy.nickname.lower() != request.user.username.lower():
         return {
             'authorized': False,
             'user': buddy,
