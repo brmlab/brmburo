@@ -41,10 +41,7 @@ class DokuwikiAuthBackend(object):
                                 try:
                                     user = User.objects.get(username=username)
                                 except User.DoesNotExist:
-                                    if is_admin:
-                                        user = User.objects.create_superuser(username=username, email=email, password="")
-                                    else:
-                                        user = User.objects.create_user(username=username, email=email, password="")
+                                    user = User.objects.create(username=username, email=email, password="")
 
                                 return user
 
