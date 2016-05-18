@@ -4,7 +4,7 @@ Django boilerplate
 INSTALL
 -------
  * install distribuiton dependencies
-  <pre>apt-get install postgresql python-virtualenv python-crypto ipython python-sqlite python-psycopg2 python-yaml python-passlib</pre>
+  <pre>apt-get install postgresql python-virtualenv python-dev python-crypto ipython python-sqlite python-psycopg2 python-yaml python-passlib</pre>
  * clone this repository and set up dependencies
   <pre>git clone <this repo> </pre>
   <pre>make initenv</pre>
@@ -14,6 +14,7 @@ INSTALL
  * create, import database and set up DATABASES in brmburo/settings/local.py
   <pre>
 from .dev import *
+
 BANK_TOKENS = [
   'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
   'BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
@@ -21,6 +22,7 @@ BANK_TOKENS = [
   'DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD',
   'EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE',
 ]
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
@@ -31,6 +33,8 @@ DATABASES = {
         'PORT': '',
         }
 }
+
+DOKUWIKI_USERS_FILE = '/path/to/users.auth.php' #config file where dokuwiki has login data, usually in /var/www/conf
   </pre>
   you can create user and empty postgres database using:
   <pre>
