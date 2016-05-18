@@ -40,6 +40,7 @@ class DokuwikiAuthBackend(object):
                             if md5_crypt.verify(password, hash):
                                 try:
                                     user = User.objects.get(username=username)
+                                    # TODO we could update email here if it changed, but it's not used for anything
                                 except User.DoesNotExist:
                                     user = User.objects.create(username=username, email=email, password="")
 
