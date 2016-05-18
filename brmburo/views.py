@@ -133,7 +133,7 @@ def roster_user(request, uid, **kw):
     if not request.user.is_superuser and buddy.nickname.lower() != request.user.username.lower():
         return {
             'authorized': False,
-            'user': buddy,
+            'buddy': buddy,
         }
 
     history = []
@@ -155,7 +155,7 @@ def roster_user(request, uid, **kw):
 
     return {
         'authorized': True,
-        'user': buddy,
+        'buddy': buddy,
         'balance': account_sum(buddy),
         'events': BuddyEvent.objects.filter(buddy=buddy).order_by('date'),
         'history': sorted(history, key=lambda h: h.get('date')),
