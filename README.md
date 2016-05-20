@@ -12,30 +12,29 @@ INSTALL
   <pre>make reqs/[dev|test|prod]</pre>
 
  * create, import database and set up DATABASES in brmburo/settings/local.py
-  <pre>
-from .dev import *
 
-BANK_TOKENS = [
-  'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
-  'BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
-  'CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC',
-  'DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD',
-  'EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE',
-]
+        from .dev import *
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'brmburo', 
-        'USER': 'brmbureaucrat',
-        'PASSWORD': 'my choosen password',
-        'HOST': '127.0.0.1',
-        'PORT': '',
+        BANK_TOKENS = [
+          'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+          'BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+          'CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC',
+          'DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD',
+          'EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE',
+        ]
+
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.postgresql_psycopg2',
+                'NAME': 'brmburo', 
+                'USER': 'brmbureaucrat',
+                'PASSWORD': 'my choosen password',
+                'HOST': '127.0.0.1',
+                'PORT': '',
+                }
         }
-}
 
-DOKUWIKI_USERS_FILE = '/path/to/users.auth.php' #config file where dokuwiki has login data, usually in /var/www/conf
-  </pre>
+    DOKUWIKI_USERS_FILE = '/path/to/users.auth.php' #config file where dokuwiki has login data, usually in /var/www/conf
   you can create user and empty postgres database using:
   <pre>
 sudo -u postgres psql &lt;&lt;-EOF
