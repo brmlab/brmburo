@@ -34,7 +34,8 @@ INSTALL
                 }
         }
 
-    DOKUWIKI_USERS_FILE = '/path/to/users.auth.php' #config file where dokuwiki has login data, usually in /var/www/conf
+        DOKUWIKI_USERS_FILE = '/path/to/users.auth.php' #config file where dokuwiki has login data, usually in /var/www/conf
+
   you can create user and empty postgres database using:
   <pre>
 sudo -u postgres psql &lt;&lt;-EOF
