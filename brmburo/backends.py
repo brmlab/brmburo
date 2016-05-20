@@ -1,6 +1,7 @@
 import re
 import logging
 from passlib.hash import md5_crypt
+from models import Buddy
 
 from django.contrib.auth.models import User
 from .settings.local import DOKUWIKI_USERS_FILE
@@ -37,12 +38,20 @@ class DokuwikiAuthBackend(object):
                         is_admin = "admin" in roles
 
                         try:
-                            if md5_crypt.verify(password, hash):
+                            if md5_crypt.verify(password, hash) and is_member:
                                 try:
                                     user = User.objects.get(username=username)
                                     # TODO we could update email here if it changed, but it's not used for anything
                                 except User.DoesNotExist:
-                                    user = User.objects.create(username=username, email=email, password="")
+                                    try:
+                                        buddy = Buddy.objects.get(nickname__iexact=username)
+                                        user = User.objects.create(username=username, email=email, password="")
+                                        buddy.user = user
+                                        buddy.save()
+                                    except Buddy.DoesNotExist:
+                                        logging.info("Buddy %s does not exist", username)
+                                        return None
+
 
                                 return user
 
