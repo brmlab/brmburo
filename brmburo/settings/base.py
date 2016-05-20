@@ -154,6 +154,11 @@ INSTALLED_APPS = (
     'brmburo'
 )
 
+AUTHENTICATION_BACKENDS = (
+    'brmburo.backends.DokuwikiAuthBackend',
+    'django.contrib.auth.backends.ModelBackend',
+)
+
 BOOTSTRAP_BASE_URL  = STATIC_URL
 
 LOGIN_URL = '/login'

@@ -15,57 +15,65 @@
 {% endblock %}
 
 {% block content %}
-    <h3>Buddy details</h3>
-    <table class="table table-hover">
-        <tr><th>UID</th><td>{{ user.uid }}</td></tr>
-        <tr><th>Type</th>
-            <td>
-                {{ user.type.name }}
-                <div class="btn-group pull-right">
-                    <button class=" btn btn-info">Discount</button>
-                    <button class=" btn btn-warning">Suspend</button>
-                    <button class=" btn btn-danger">Terminate</button>
-                </div>
-            </td>
-        </tr>
-        <tr><th>Nick</th><td>{{ user.nickname }}</td></tr>
-        <tr><th>Full Name</th><td>{{ user.first_name }} {{ user.middle_name }} {{ user.surname }}</td></tr>
-        <tr><th>Email</th><td>{{ user.email }}</td></tr>
-        <tr><th>Phone</th><td>{{ user.phone }}</td></tr>
-        <tr><th>Born</th><td>{{ user.born|date:"Y" }}</td></tr>
-        <tr><th>IRL</th><td>{{ user.irl }}</td></tr>
-        <tr><th>Comment</th><td>{{ user.comment }}</td></tr>
-        <tr><th>Account balance</th><td> <a href="{% url 'account_detail' user.logic_account.id %}">{{ balance }}</a></td></tr>
-        {% for principal in principals %}
-            <tr><th>{{ principal.type.name }} {{ principal.name }}</th><td>{{ principal.value }}</td></tr>
-
-        {% endfor %}
-        {% if events.exists %}
-            <tr><th>Events</th>
+    {% if no_such_uid %}
+        <h3>No such uid: {{ uid }}.</h3>
+    {% elif not authorized %}
+        <h3>You are not authorized to view {{ buddy.nickname }}'s details.</h3>
+    {% else %}
+        <h3>Buddy details</h3>
+        <table class="table table-hover">
+            <tr><th>UID</th><td>{{ buddy.uid }}</td></tr>
+            <tr><th>Type</th>
                 <td>
-                    <table class="table table-condensed table-bordered">
-                        <tr>
-                            <th>date</th>
-                            <th>type</th>
-                            <th>amount</th>
-                            <th>currency</th>
-                            <th>comment</th>
-                        </tr>
-
-                        {% for event in history %}
-                            <tr class={{ event.color }}>
-                                <td>{{ event.date|date:'Y-m-d' }}</td>
-                                <td>{{ event.type }}</td>
-                                <td>{{ event.amount }}</td>
-                                <td>{{ event.currency }}</td>
-                                <td>{% if event.reason %} {{ event.reason }} {% endif %}</td>
-                            </tr>
-                        {% endfor %}
-                    </table>
+                    {{ buddy.type.name }}
+                    {% if can_edit %}
+                        <div class="btn-group pull-right">
+                            <button class=" btn btn-info">Discount</button>
+                            <button class=" btn btn-warning">Suspend</button>
+                            <button class=" btn btn-danger">Terminate</button>
+                        </div>
+                    {% endif %}
                 </td>
             </tr>
-        {% endif %}
-    </table>
+            <tr><th>Nick</th><td>{{ buddy.nickname }}</td></tr>
+            <tr><th>Full Name</th><td>{{ buddy.first_name }} {{ user.middle_name }} {{ user.surname }}</td></tr>
+            <tr><th>Email</th><td>{{ buddy.email }}</td></tr>
+            <tr><th>Phone</th><td>{{ buddy.phone }}</td></tr>
+            <tr><th>Born</th><td>{{ buddy.born|date:"Y" }}</td></tr>
+            <tr><th>IRL</th><td>{{ buddy.irl }}</td></tr>
+            <tr><th>Comment</th><td>{{ buddy.comment }}</td></tr>
+            <tr><th>Account balance</th><td> <a href="{% url 'account_detail' buddy.logic_account.id %}">{{ balance }}</a></td></tr>
+            {% for principal in principals %}
+                <tr><th>{{ principal.type.name }} {{ principal.name }}</th><td>{{ principal.value }}</td></tr>
+
+            {% endfor %}
+            {% if events.exists %}
+                <tr><th>Events</th>
+                    <td>
+                        <table class="table table-condensed table-bordered">
+                            <tr>
+                                <th>date</th>
+                                <th>type</th>
+                                <th>amount</th>
+                                <th>currency</th>
+                                <th>comment</th>
+                            </tr>
+
+                            {% for event in history %}
+                                <tr class={{ event.color }}>
+                                    <td>{{ event.date|date:'Y-m-d' }}</td>
+                                    <td>{{ event.type }}</td>
+                                    <td>{{ event.amount }}</td>
+                                    <td>{{ event.currency }}</td>
+                                    <td>{% if event.reason %} {{ event.reason }} {% endif %}</td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    </td>
+                </tr>
+            {% endif %}
+        </table>
+    {% endif %}
 {% endblock %}
 
 {% block javascript %}

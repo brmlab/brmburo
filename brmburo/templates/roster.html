@@ -14,26 +14,30 @@
 {% endblock %}
 
 {% block content %}
-    <h3>Roster</h3>
-    <table class="table table-hover" style="display: table">
-        <tr>
-            <th>uid</th>
-            <th>nick</th>
-            <th>balance</th>
-            <th>type</th>
-            <th>name</th>
-        </tr>
-        {% for user,balance in users %}
+    {% if not authorized %}
+        <h3>You are not authorized to view full roster.</h3>
+    {% else %}
+        <h3>Roster</h3>
+        <table class="table table-hover" style="display: table">
             <tr>
-                <td><a href="{% url 'roster_user' user.uid %}">{{ user.uid }}</a></td>
-                <td>{{ user.nickname }}</td>
-                <td><a href="{% url 'account_detail' user.logic_account.id %}">{{ balance }}</a></td>
-                <td>{{ user.type.name }}</td>
-                <td>{{ user.first_name }} {{ user.middle_name }} {{ user.surname }}</td>
+                <th>uid</th>
+                <th>nick</th>
+                <th>balance</th>
+                <th>type</th>
+                <th>name</th>
             </tr>
-        {% endfor %}
+            {% for user,balance in users %}
+                <tr>
+                    <td><a href="{% url 'roster_user' user.uid %}">{{ user.uid }}</a></td>
+                    <td>{{ user.nickname }}</td>
+                    <td><a href="{% url 'account_detail' user.logic_account.id %}">{{ balance }}</a></td>
+                    <td>{{ user.type.name }}</td>
+                    <td>{{ user.first_name }} {{ user.middle_name }} {{ user.surname }}</td>
+                </tr>
+            {% endfor %}
 
-    </table>
+        </table>
+    {% endif %}
 {% endblock %}
 
 {% block javascript %}

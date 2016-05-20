@@ -1,9 +1,9 @@
 __author__ = 'pborky'
 
-from django.db.models import Model, CharField, EmailField, IntegerField, BooleanField, DateField, TextField, ForeignKey, ManyToManyField, FileField, DateTimeField, FloatField, DecimalField
+from django.db.models import Model, CharField, EmailField, IntegerField, BooleanField, DateField, TextField, ForeignKey, ManyToManyField, FileField, DateTimeField, DecimalField
 from tinymce.models import HTMLField
 from django.utils.datetime_safe import date
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, AbstractBaseUser, UserManager
 
 class BuddyType(Model): # friend, member, terminated, suspended ...
     name = CharField(max_length=100, verbose_name='Buddy Type Name')
@@ -213,7 +213,6 @@ class BankTransaction(Model):
 # Accounting dues (at the 10th day of the month) is a transaction:
 # pasky        CREDIT 500   (if pasky's balance ends up positive, he owes us money)
 # prepaid_dues DEBIT  500   (if members globally don't pay their dues, this account could get negative)
-
 
 
 class SiteResource(Model): # some resource strings
