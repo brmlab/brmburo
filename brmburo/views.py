@@ -1,3 +1,4 @@
+import re
 import logging
 
 from django.contrib import messages
@@ -296,13 +297,16 @@ def buddy_add_new(request, forms, **kw):
     if not request.user.is_superuser:
         return
 
-    form = AddBuddyForm(request.POST)
+    form = AddBuddyForm(request.POST.copy())
+
+    # make just year also accepted in "born" field
+    m = re.match(r"^\d{4}$", form.data["born"])
+    if m:
+        form.data["born"] = m.group(0) + "-01-01"
 
     if not form.is_valid():
-        #TODO accept just year of birth instead of date, probably means doing "is_valid()" ourselves
+        messages.error(request, 'Buddy addition was rejected because form was invalid. Required are: UID, nick, buddy type.')
         return
-
-    print "Got here"
 
     buddy = form.save(commit=False)
     logic_account = LogicAccount.objects.create(
@@ -313,3 +317,4 @@ def buddy_add_new(request, forms, **kw):
     )
     buddy.logic_account = logic_account
     buddy.save()
+    messages.success(request, 'Buddy addition was successful.')
