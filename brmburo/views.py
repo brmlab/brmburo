@@ -269,3 +269,10 @@ def bank_transaction_detail(request, id, **kw):
         'authorized': True,
         'transaction': transaction,
     }
+
+@view_GET( r'^buddy/add$', template = 'buddy_add.html')
+@login_required
+def buddy_add(request, **kw):
+    return {
+        "authorized": False,
+    }
