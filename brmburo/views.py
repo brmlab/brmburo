@@ -1,15 +1,16 @@
-from brmburo.models import LogicTransaction, LogicTransactionSplit, LogicAccount, BuddyEvent, SecurityPrincipal, Buddy
-from brmburo.transactions import account_sum
-
-__author__ = 'pborky'
+import logging
 
 from django.contrib import messages
 from django.views.decorators import cache
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
 
+from brmburo.models import LogicTransaction, LogicTransactionSplit, LogicAccount, BuddyEvent, SecurityPrincipal, Buddy, BankTransaction
+from brmburo.transactions import account_sum
 from .helpers import view_POST, view_GET, combine
 from .forms import LoginForm
+
+logger = logging.getLogger(__name__)
 
 
 @view_POST(
@@ -105,12 +106,64 @@ def transaction_list(request, **kw):
     if not request.user.is_superuser:
         return {
             'authorized': False,
-        }
+            }
+
+    transactions = LogicTransaction.objects.all()
+    bank_transactions = BankTransaction.objects.filter(logic_transaction__isnull=True, ignored=False)
+    ignored_bank_transactions = BankTransaction.objects.filter(logic_transaction__isnull=True, ignored=True)
 
     return {
         'authorized': True,
-        'transactions': ((transaction,LogicTransactionSplit.objects.filter(transaction=transaction).count()) for transaction in LogicTransaction.objects.all().order_by('time') ),
+        'transactions': (
+            (transaction,LogicTransactionSplit.objects.filter(transaction=transaction).count())
+            for transaction in transactions.order_by('time')
+        ),
+        'counts': {
+            'transactions': transactions.count(),
+            'bank_transactions': bank_transactions.count(),
+            'ignored_bank_transactions': ignored_bank_transactions.count(),
+            }
         }
+
+@view_GET( r'^bank-transaction/list/(?P<category>ignored|new)$', template='bank_transaction_list.html')
+@login_required
+def bank_transaction_list(request, category, **kw):
+    # only superuser can view all transactions
+    if not request.user.is_superuser:
+        return {
+            'authorized': False,
+            }
+
+    transactions = LogicTransaction.objects.all()
+    bank_transactions = BankTransaction.objects.filter(logic_transaction__isnull=True, ignored=False)
+    ignored_bank_transactions = BankTransaction.objects.filter(logic_transaction__isnull=True, ignored=True)
+
+    return {
+        'authorized': True,
+        'bank_transactions': ignored_bank_transactions if category == 'ignored' else bank_transactions ,
+        'ignored': category == 'ignored',
+        'counts': {
+            'transactions': transactions.count(),
+            'bank_transactions': bank_transactions.count(),
+            'ignored_bank_transactions': ignored_bank_transactions.count(),
+            }
+    }
+
+@view_POST(r'^bank-transaction/detail/ignore$',
+           form_cls=None,
+           redirect_to=None,
+           redirect_attr='nexturl',
+           decorators=(cache.never_cache,)
+)
+@login_required
+def bank_transaction_ignore(request, forms, **kw):
+    transaction = BankTransaction.objects.get(id=int(request.POST['id']))
+    transaction.ignored = not transaction.ignored
+    transaction.save()
+    if transaction.ignored:
+        messages.success(request, 'Transaction #%s moved to ignore list.' % transaction.id)
+    else:
+        messages.success(request, 'Transaction #%s moved from ignore list.' % transaction.id)
 
 @view_GET( r'^roster/user/(?P<uid>[0-9]*)$', template = 'roster_user.html')
 @login_required
@@ -190,10 +243,24 @@ def transaction_detail(request, id, **kw):
     if not request.user.is_superuser:
         return {
             'authorized': False,
-        }
+            }
     transaction = LogicTransaction.objects.get(id=id)
     return {
         'authorized': True,
         'transaction': transaction,
         'splits': LogicTransactionSplit.objects.filter(transaction=transaction)
-        }
+    }
+
+@view_GET( r'^bank-transaction/detail/(?P<id>[0-9]*)$', template = 'bank_transaction_detail.html')
+@login_required
+def bank_transaction_detail(request, id, **kw):
+    # only superuser can view transaction details - it could be more finegrained, but it's like this for now
+    if not request.user.is_superuser:
+        return {
+            'authorized': False,
+            }
+    transaction = BankTransaction.objects.get(id=id)
+    return {
+        'authorized': True,
+        'transaction': transaction,
+    }

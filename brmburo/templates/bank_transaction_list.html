@@ -18,22 +18,22 @@
     {% else %}
         <ul class="nav nav-tabs">
 
-            <li class="{% if transactions %}active{% endif %}">
+            <li>
                 <a href="{% if not transactions %}{% url 'transaction_list' %}{% else %}#{% endif %}">
                     Accounting
                     &nbsp;
                     <span class="badge badge-info pull-right">{{ counts.transactions }}</span>
                 </a>
             </li>
-            <li>
-                <a href="{% url 'bank_transaction_list' 'new' %}">
+            <li class="{% if not ignored %}active{% endif %}">
+                <a href="{% if ignored %}{% url 'bank_transaction_list' 'new' %}{% else %}#{% endif %}">
                     Unpaired bank transactions
                     &nbsp;
                     <span class="badge badge-info pull-right">{{ counts.bank_transactions }}</span>
                 </a>
             </li>
-            <li>
-                <a class="muted" href="{% url 'bank_transaction_list' 'ignored' %}">
+            <li class="{% if ignored %}active{% endif %}">
+                <a class="muted" href="{% if not ignored %}{% url 'bank_transaction_list' 'ignored' %}{% else %}#{% endif %}">
                     Ignored bank transactions
                     &nbsp;
                     <span class="badge pull-right">{{ counts.ignored_bank_transactions }}</span>
@@ -46,16 +46,27 @@
             <tr>
                 <th>id</th>
                 <th>date</th>
+                <th>amount</th>
+                <th>currency</th>
                 <th>comment</th>
+                <th></th>
             </tr>
-            {% for transaction,splits in transactions %}
+            {% for transaction in bank_transactions %}
                 <tr>
-                    <td><a href="{% url 'transaction_detail' transaction.id %}">#{{ transaction.id }}</a></td>
-                    <td>{{ transaction.time|date:'Y-m-d' }}</td>
+                    <td><a href="{% url 'bank_transaction_detail' transaction.id %}">#{{ transaction.id }}</a></td>
+                    <td>{{ transaction.date|date:'Y-m-d' }}</td>
+                    <td>{{ transaction.amount }}</td>
+                    <td>{{ transaction.currency }}</td>
                     <td>{{ transaction.comment }}</td>
+                    <td>
+                        <form action="{% url 'bank_transaction_ignore' %}?nexturl={{ request.get_full_path|urlencode }}" method="POST">
+                            {% csrf_token %}
+                            <input type="hidden" name="id" value="{{ transaction.id }}">
+                            <button class="close" data-toggle="tooltip" data-placement="top" data-original-title="Ignore">&times;</button>
+                        </form>
+                    </td>
                 </tr>
             {% endfor %}
-
         </table>
     {% endif %}
 {% endblock %}

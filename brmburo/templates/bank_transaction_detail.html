@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block body_class %}{{ block.super }} home{% endblock %}
+
+{% block menu %}
+    <li><a href="{% url 'home' %}">Home</a></li>
+    <li><a href="{% url 'roster' %}">Roster</a></li>
+    <li><a href="{% url 'account_list' %}">Accounts</a></li>
+    <li class="active"><a href="{% url 'transaction_list' %}">Transactions</a></li>
+{% endblock %}
+
+{% block sidebar %}
+{% endblock %}
+
+{% block content %}
+    {% if not authorized %}
+        <h3>You are not authorized to view transaction details.</h3>
+    {% else %}
+        <h3>Bank transaction details</h3>
+        <table class="table table-hover">
+            <tr><th>ID</th><td>#{{ transaction.tid }}</td></tr>
+            <tr><th>Date</th><td>{{ transaction.date|date:'Y-m-d' }}</td></tr>
+            <tr><th>Amount</th><td>{{ transaction.amount }}</td></tr>
+            <tr><th>Currency</th><td>{{ transaction.currency }}</td></tr>
+            <tr><th>My Account</th><td>{{ transaction.my_account }}</td></tr>
+            <tr><th>Their Account</th><td>{{ transaction.their_account }}</td></tr>
+            <tr><th>Constant Symbol</th><td>{{ transaction.constant_symbol }}</td></tr>
+            <tr><th>Specific Symbol</th><td>{{ transaction.specific_symbol }}</td></tr>
+            <tr><th>Variable Symbol</th><td>{{ transaction.variable_symbol }}</td></tr>
+            <tr><th>Recipient Message</th><td>{{ transaction.recipient_message }}</td></tr>
+            <tr><th>Comment</th><td>{{ transaction.comment }}</td></tr>
+        </table>
+    {% endif %}
+{% endblock %}
+
+{% block javascript %}
+{% endblock  %}
+
+{% block footer %}
+{% endblock  %}

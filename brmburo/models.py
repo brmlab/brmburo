@@ -190,6 +190,7 @@ class BankTransaction(Model):
     logic_transaction = ForeignKey(LogicTransaction, null=True, blank=True)
     #buddy = ForeignKey(Buddy,null=True,blank=True)
     date = DateField(verbose_name='Bank Transaction Date')
+    ignored = BooleanField(verbose_name='Ignored', default=False, null=False, blank=False)
     def __unicode__(self):
         if self.amount >= 0:
             template = u'%0.2f %s (%s -> %s)'
