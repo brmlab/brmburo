@@ -5,7 +5,8 @@ from django.views.decorators import cache
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 
-from brmburo.models import LogicTransaction, LogicTransactionSplit, LogicAccount, BuddyEvent, SecurityPrincipal, Buddy, BankTransaction
+from brmburo.models import LogicTransaction, LogicTransactionSplit, LogicAccount, BuddyEvent, SecurityPrincipal, \
+    Buddy, BankTransaction, Currency, LogicAccountType
 from brmburo.transactions import account_sum
 from .helpers import view_POST, view_GET, combine
 from .forms import LoginForm, AddBuddyForm, BuddyAdminForm
@@ -278,10 +279,37 @@ def buddy_add(request, **kw):
             'authorized': False,
         }
 
-    # FIXME we have a TOCTOU condition with checking prime, it should be also checked when inserted into DB
     form = AddBuddyForm({"uid": BuddyAdminForm.get_default_prime()})
 
     return {
         'form': form,
         'authorized': 'True'}
 
+@view_POST(r'^buddy/add/new/$',
+           form_cls=None,
+           redirect_to="/",
+           redirect_attr='nexturl',
+           decorators=(cache.never_cache,)
+           )
+@login_required
+def buddy_add_new(request, forms, **kw):
+    if not request.user.is_superuser:
+        return
+
+    form = AddBuddyForm(request.POST)
+
+    if not form.is_valid():
+        #TODO accept just year of birth instead of date, probably means doing "is_valid()" ourselves
+        return
+
+    print "Got here"
+
+    buddy = form.save(commit=False)
+    logic_account = LogicAccount.objects.create(
+        name = "Payments from %s %s" % (buddy.first_name, buddy.surname),
+        symbol = "@%s" % buddy.nickname,
+        currency = Currency.objects.get(symbol="CZK"),
+        type = LogicAccountType.objects.get(symbol="credit")
+    )
+    buddy.logic_account = logic_account
+    buddy.save()

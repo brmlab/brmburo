@@ -6,7 +6,8 @@ import tinymce.urls
 
 from .helpers import autoregister
 from .views import login,logout,login,do_login, roster, roster_user, account_detail, account_list, transaction_list, \
-    transaction_detail, bank_transaction_list, bank_transaction_detail, bank_transaction_ignore, buddy_add
+    transaction_detail, bank_transaction_list, bank_transaction_detail, bank_transaction_ignore, buddy_add, \
+    buddy_add_new
 from .models import Buddy
 from .forms import BuddyAdmin
 
@@ -29,6 +30,7 @@ urlpatterns = patterns('',
     bank_transaction_detail.url(),
     bank_transaction_ignore.url(),
     buddy_add.url(),
+    buddy_add_new.url(),
 
     url(r'^$', TemplateView.as_view(template_name='home.html'), name='home'),
 
