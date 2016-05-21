@@ -6,7 +6,7 @@
     <li><a href="{% url 'home' %}">Home</a></li>
     <li><a href="{% url 'roster' %}">Roster</a></li>
     <li><a href="{% url 'account_list' %}">Accounts</a></li>
-     <li class="active"><a href="{% url 'transaction_list' %}">Transactions</a></li>
+     <li class="active"><a href="{% url 'bank_transaction_list' 'new' %}">Transactions</a></li>
 {% endblock %}
 
 {% block sidebar %}
@@ -16,10 +16,13 @@
     {% if not authorized %}
         <h3>You are not authorized to view transactions.</h3>
     {% else %}
+
+        <h3>Transactions</h3>
+
         <ul class="nav nav-tabs">
 
             <li>
-                <a href="{% if not transactions %}{% url 'transaction_list' %}{% else %}#{% endif %}">
+                <a href="{% url 'transaction_list' %}">
                     Accounting
                     &nbsp;
                     <span class="badge badge-info pull-right">{{ counts.transactions }}</span>
@@ -40,8 +43,32 @@
                 </a>
             </li>
         </ul>
+        {% if transactions.has_previous or transactions.has_next %}
+            <div class="pagination pagination-small pagination-right">
+                <ul>
+                    {% if transactions.has_previous %}
+                        <li><a data-toggle="tooltip" title="First" href="?page=1">&lt;&lt;</a></li>
+                        <li><a data-toggle="tooltip" title="Previous" href="?page={{ transactions.previous_page_number }}">&lt;</a></li>
+                    {% else %}
+                        <li class="disabled"><span data-toggle="tooltip" title="First">&lt;&lt;</span></li>
+                        <li class="disabled"><span  data-toggle="tooltip" title="Previous">&lt;</span></li>
+                    {% endif %}
 
-        <h3>Transactions</h3>
+                    <li class="disabled"><span>Page {{ transactions.number }} of {{ transactions.paginator.num_pages }}</span></li>
+
+
+
+                    {% if transactions.has_next %}
+                        <li><a data-toggle="tooltip" title="Next" href="?page={{ transactions.next_page_number }}">&gt;</a></li>
+                        <li><a data-toggle="tooltip" title="Last" href="?page={{ transactions.paginator.num_pages }}">&gt;&gt;</a></li>
+                    {% else %}
+                        <li class="disabled"><span data-toggle="tooltip" title="Next">&gt;</span></li>
+                        <li class="disabled"><span  data-toggle="tooltip" title="Last">&gt;&gt;</span></li>
+                    {% endif %}
+                </ul>
+            </div>
+        {% endif %}
+
         <table class="table table-hover" style="display: table">
             <tr>
                 <th>id</th>
@@ -51,7 +78,7 @@
                 <th>comment</th>
                 <th></th>
             </tr>
-            {% for transaction in bank_transactions %}
+            {% for transaction in transactions %}
                 <tr>
                     <td><a href="{% url 'bank_transaction_detail' transaction.id %}">#{{ transaction.id }}</a></td>
                     <td>{{ transaction.date|date:'Y-m-d' }}</td>
@@ -68,6 +95,31 @@
                 </tr>
             {% endfor %}
         </table>
+        {% if transactions.has_previous or transactions.has_next %}
+            <div class="pagination pagination-small pagination-right">
+                <ul>
+                    {% if transactions.has_previous %}
+                        <li><a data-toggle="tooltip" title="First" href="?page=1">&lt;&lt;</a></li>
+                        <li><a data-toggle="tooltip" title="Previous" href="?page={{ transactions.previous_page_number }}">&lt;</a></li>
+                    {% else %}
+                        <li class="disabled"><span data-toggle="tooltip" title="First">&lt;&lt;</span></li>
+                        <li class="disabled"><span  data-toggle="tooltip" title="Previous">&lt;</span></li>
+                    {% endif %}
+
+                    <li class="disabled"><span>Page {{ transactions.number }} of {{ transactions.paginator.num_pages }}</span></li>
+
+
+
+                    {% if transactions.has_next %}
+                        <li><a data-toggle="tooltip" title="Next" href="?page={{ transactions.next_page_number }}">&gt;</a></li>
+                        <li><a data-toggle="tooltip" title="Last" href="?page={{ transactions.paginator.num_pages }}">&gt;&gt;</a></li>
+                    {% else %}
+                        <li class="disabled"><span data-toggle="tooltip" title="Next">&gt;</span></li>
+                        <li class="disabled"><span  data-toggle="tooltip" title="Last">&gt;&gt;</span></li>
+                    {% endif %}
+                </ul>
+            </div>
+        {% endif %}
     {% endif %}
 {% endblock %}
 
