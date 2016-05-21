@@ -274,5 +274,5 @@ def bank_transaction_detail(request, id, **kw):
 @login_required
 def buddy_add(request, **kw):
     return {
-        "authorized": False,
+        "authorized": request.user.is_superuser,
     }
