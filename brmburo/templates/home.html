@@ -10,7 +10,7 @@
         To view your roster detail or full roster, you need to log in.
     </p>
 {% else %}
-    <p> Link to <a href="/roster">roster view is here</a>.</p>
+    <p> Link to <a href="{% url 'roster' %}">roster view is here</a>.</p>
 {% endif %}
     <p>
         In order to view full roster, account and transaction details or modify buddies, you must login as superuser.
