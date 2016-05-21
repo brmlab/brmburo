@@ -147,7 +147,7 @@ def view(pattern, template = None, form_cls = None, redirect_to = None, redirect
                 raise e
                 #return HttpResponseServerError()
 
-            redirect_addr = combine(request.GET,request.POST).pop(redirect_attr, redirect_to)
+            redirect_addr = combine(request.GET, request.POST) .get(redirect_attr, redirect_to)
 
             if redirect_addr:
                 context_vars = { }
