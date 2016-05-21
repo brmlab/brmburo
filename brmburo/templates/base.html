@@ -48,7 +48,6 @@
                                         <li class=""><a href="{% url 'admin:index' %}">Admin</a></li>
                                         <li class="divider"></li>
                                     {% endif %}
-                                    <li><a href="{% url 'admin:password_change' %}">Change password</a></li>
                                     <li><a href="{% url 'logout' %}?next={{ request.get_full_path }}">Logout</a></li>
                                 </ul>
                             </li>

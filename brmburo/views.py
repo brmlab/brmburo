@@ -70,10 +70,15 @@ def roster(request, **kw):
     from models import Buddy
 
     # only superuser can view full roster (it contains balances etc.)
+    # redirect user if his username matches logged in user (authorization for roster detail is done in that view)
     if not request.user.is_superuser:
-        return {
-            'authorized': False,
-        }
+        try:
+            buddy = Buddy.objects.get(nickname__iexact=request.user.username)
+            return redirect("roster_user", uid=buddy.uid)
+        except Buddy.DoesNotExist:
+            return {
+                'authorized': False,
+            }
 
     return {
         'authorized': True,

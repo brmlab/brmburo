@@ -5,10 +5,13 @@
 {% block content %}
     <h3>Welcome to BrmBuro SAP</h3>
 
+{% if not user.is_authenticated %}
     <p>
-        To view your roster detail, you must login and follow roster link given to you.
+        To view your roster detail or full roster, you need to log in.
     </p>
-
+{% else %}
+    <p> Link to <a href="/roster">roster view is here</a>.</p>
+{% endif %}
     <p>
         In order to view full roster, account and transaction details or modify buddies, you must login as superuser.
     </p>
