@@ -38,18 +38,27 @@ class DokuwikiAuthBackend(object):
                         is_admin = "admin" in roles
 
                         try:
-                            if md5_crypt.verify(password, hash) and is_member:
+                            if md5_crypt.verify(password, hash):
                                 try:
                                     user = User.objects.get(username=username)
+                                    user.email = email
+                                    # user invalidation
+                                    if not is_member:
+                                        user.is_superuser = False
+                                        user.is_staff = False
+                                    user.save()
                                     # TODO we could update email here if it changed, but it's not used for anything
                                 except User.DoesNotExist:
-                                    try:
-                                        buddy = Buddy.objects.get(nickname__iexact=username)
-                                        user = User.objects.create(username=username, email=email, password="")
-                                        buddy.user = user
-                                        buddy.save()
-                                    except Buddy.DoesNotExist:
-                                        logging.info("Buddy %s does not exist", username)
+                                    if is_member:
+                                        try:
+                                            buddy = Buddy.objects.get(nickname__iexact=username)
+                                            user = User.objects.create(username=username, email=email, password="")
+                                            buddy.user = user
+                                            buddy.save()
+                                        except Buddy.DoesNotExist:
+                                            logging.info("Buddy %s does not exist", username)
+                                            return None
+                                    else:
                                         return None
 
 
