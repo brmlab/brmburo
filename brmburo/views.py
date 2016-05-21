@@ -1,15 +1,18 @@
+import re
+import datetime
 import logging
 
 from django.contrib import messages
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.views.decorators import cache
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 
-from brmburo.models import LogicTransaction, LogicTransactionSplit, LogicAccount, BuddyEvent, SecurityPrincipal, Buddy, BankTransaction
+from brmburo.models import LogicTransaction, LogicTransactionSplit, LogicAccount, LogicAccountType, SecurityPrincipal, \
+    Buddy, BuddyType, BuddyEvent, BuddyEventType, BankTransaction, Currency
 from brmburo.transactions import account_sum
 from .helpers import view_POST, view_GET, combine
-from .forms import LoginForm
+from .forms import LoginForm, AddBuddyForm, BuddyAdminForm
 
 logger = logging.getLogger(__name__)
 
@@ -289,3 +292,61 @@ def bank_transaction_detail(request, id, **kw):
         'authorized': True,
         'transaction': transaction,
     }
+
+@view_GET( r'^buddy/add/$', template = 'buddy_add.html', decorators = ( cache.never_cache,  ),)
+@login_required
+def buddy_add(request, **kw):
+    if not request.user.is_superuser:
+        return {
+            'authorized': False,
+        }
+
+    form = AddBuddyForm({"uid": BuddyAdminForm.get_default_prime()})
+
+    return {
+        'form': form,
+        'authorized': 'True'}
+
+@view_POST(r'^buddy/add/new/$',
+           form_cls=None,
+           redirect_to="/",
+           redirect_attr='nexturl',
+           decorators=(cache.never_cache,)
+           )
+@login_required
+def buddy_add_new(request, forms, **kw):
+    if not request.user.is_superuser:
+        return
+
+    form = AddBuddyForm(request.POST.copy())
+
+    # make just year also accepted in "born" field
+    m = re.match(r"^\d{4}$", form.data["born"])
+    if m:
+        form.data["born"] = m.group(0) + "-01-01"
+
+    if not form.is_valid():
+        messages.error(request, 'Buddy addition was rejected because form was invalid. Required are: UID, nick, buddy type.')
+        return
+
+    buddy = form.save(commit=False)
+    # automatically create logic account and start buddy event for member
+    # this will raise exception if buddy type with symbol "member" or buddy event type "start" does not exist yet
+    if buddy.type == BuddyType.objects.get(symbol="member"):
+        logic_account = LogicAccount.objects.create(
+            name = "Payments from %s %s" % (buddy.first_name, buddy.surname),
+            symbol = "@%s" % buddy.nickname,
+            currency = Currency.objects.get(symbol="CZK"),
+            type = LogicAccountType.objects.get(symbol="credit")
+        )
+        buddy.logic_account = logic_account
+        # This breaks on InternalError when event is created, no fucking idea why - it works from manage.py shell
+        # event_type = BuddyEventType.objects.get(symbol="start")
+        # event = BuddyEvent.objects.create(
+        #     buddy=buddy,
+        #     type=event_type,
+        #     date=datetime.date.today(),
+        #     reason="Buddy %s created" % buddy.nickname,
+        # )
+    buddy.save()
+    messages.success(request, 'Buddy addition was successful.')

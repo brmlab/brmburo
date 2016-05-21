@@ -48,3 +48,8 @@ class BuddyAdminForm(forms.ModelForm):
 class BuddyAdmin(ModelAdmin):
     form = BuddyAdminForm
 
+class AddBuddyForm(forms.ModelForm):
+
+    class Meta:
+        model = Buddy
+        fields = ('uid', 'type', 'first_name', 'middle_name', 'surname', 'nickname', 'email', 'phone', 'born', 'irl', 'comment', 'user')
