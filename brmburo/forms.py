@@ -1,5 +1,6 @@
 __author__ = 'pborky'
 
+from random import shuffle
 from django import forms
 from bootstrap_toolkit.widgets import BootstrapTextInput, BootstrapPasswordInput
 from brmburo.models import Buddy
@@ -28,11 +29,14 @@ class BuddyAdminForm(forms.ModelForm):
 
     @staticmethod
     def get_default_prime():
-        #select max UID we have or start with 3 as largest previous prime
-        prime_candidate = Buddy.objects.all().aggregate(Max('uid'))['uid__max'] or 3
-        prime_candidate |= 1 #just make sure we start with odd number if something was broken in DB
-        while True:
-            prime_candidate += 2
+        #select uid in range [1111,9999] that is not already taken
+        buddy_uids = set(Buddy.objects.values_list('uid', flat=True))
+        candidates = range(1111, 9999, 2)
+        shuffle(candidates)
+
+        for prime_candidate in candidates:
+            if prime_candidate in buddy_uids:
+                continue
             if rabin_miller(prime_candidate):
                 return prime_candidate
 
