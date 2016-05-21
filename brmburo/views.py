@@ -8,7 +8,7 @@ from django.shortcuts import redirect, render
 from brmburo.models import LogicTransaction, LogicTransactionSplit, LogicAccount, BuddyEvent, SecurityPrincipal, Buddy, BankTransaction
 from brmburo.transactions import account_sum
 from .helpers import view_POST, view_GET, combine
-from .forms import LoginForm, AddBuddyForm
+from .forms import LoginForm, AddBuddyForm, BuddyAdminForm
 
 logger = logging.getLogger(__name__)
 
@@ -270,7 +270,7 @@ def bank_transaction_detail(request, id, **kw):
         'transaction': transaction,
     }
 
-@view_GET( r'^buddy/add/$', template = 'buddy_add.html')
+@view_GET( r'^buddy/add/$', template = 'buddy_add.html', decorators = ( cache.never_cache,  ),)
 @login_required
 def buddy_add(request, **kw):
     if not request.user.is_superuser:
@@ -278,7 +278,8 @@ def buddy_add(request, **kw):
             'authorized': False,
         }
 
-    form = AddBuddyForm()
+    # FIXME we have a TOCTOU condition with checking prime, it should be also checked when inserted into DB
+    form = AddBuddyForm({"uid": BuddyAdminForm.get_default_prime()})
 
     return {
         'form': form,
