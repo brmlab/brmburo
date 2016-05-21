@@ -6,7 +6,7 @@
     <li><a href="{% url 'home' %}">Home</a></li>
     <li><a href="{% url 'roster' %}">Roster</a></li>
     <li><a href="{% url 'account_list' %}">Accounts</a></li>
-     <li class="active"><a href="{% url 'transaction_list' %}">Transactions</a></li>
+    <li class="active"><a href="{% url 'bank_transaction_list' 'new' %}">Transactions</a></li>
 {% endblock %}
 
 {% block sidebar %}
