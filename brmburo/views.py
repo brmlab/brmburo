@@ -1,6 +1,7 @@
 import logging
 
 from django.contrib import messages
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.views.decorators import cache
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
@@ -117,12 +118,20 @@ def transaction_list(request, **kw):
     bank_transactions = BankTransaction.objects.filter(logic_transaction__isnull=True, ignored=False)
     ignored_bank_transactions = BankTransaction.objects.filter(logic_transaction__isnull=True, ignored=True)
 
+    paginator = Paginator(transactions, 25) # Show 25 transactions per page
+    page = request.GET.get('page')
+    try:
+        results = paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        results = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        results = paginator.page(paginator.num_pages)
+
     return {
         'authorized': True,
-        'transactions': (
-            (transaction,LogicTransactionSplit.objects.filter(transaction=transaction).count())
-            for transaction in transactions.order_by('time')
-        ),
+        'transactions': results,
         'counts': {
             'transactions': transactions.count(),
             'bank_transactions': bank_transactions.count(),
@@ -143,16 +152,27 @@ def bank_transaction_list(request, category, **kw):
     bank_transactions = BankTransaction.objects.filter(logic_transaction__isnull=True, ignored=False)
     ignored_bank_transactions = BankTransaction.objects.filter(logic_transaction__isnull=True, ignored=True)
 
+    paginator = Paginator(ignored_bank_transactions if category == 'ignored' else bank_transactions, 25) # Show 25 transactions per page
+    page = request.GET.get('page')
+    try:
+        results = paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        results = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        results = paginator.page(paginator.num_pages)
+
     return {
         'authorized': True,
-        'bank_transactions': ignored_bank_transactions if category == 'ignored' else bank_transactions ,
+        'transactions':  results,
         'ignored': category == 'ignored',
         'counts': {
             'transactions': transactions.count(),
             'bank_transactions': bank_transactions.count(),
             'ignored_bank_transactions': ignored_bank_transactions.count(),
             }
-    }
+        }
 
 @view_POST(r'^bank-transaction/detail/ignore$',
            form_cls=None,
