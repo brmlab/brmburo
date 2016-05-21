@@ -21,8 +21,9 @@
     {% else %}
         <h3>Add new buddy</h3>
 
-        <form>
-            <input
+        <form method="POST" class="post-form">{% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="save btn btn-default">Save</button>
         </form>
     {% endif %}
 {% endblock %}

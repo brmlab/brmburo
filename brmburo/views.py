@@ -3,12 +3,12 @@ import logging
 from django.contrib import messages
 from django.views.decorators import cache
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 
 from brmburo.models import LogicTransaction, LogicTransactionSplit, LogicAccount, BuddyEvent, SecurityPrincipal, Buddy, BankTransaction
 from brmburo.transactions import account_sum
 from .helpers import view_POST, view_GET, combine
-from .forms import LoginForm
+from .forms import LoginForm, AddBuddyForm
 
 logger = logging.getLogger(__name__)
 
@@ -270,9 +270,17 @@ def bank_transaction_detail(request, id, **kw):
         'transaction': transaction,
     }
 
-@view_GET( r'^buddy/add$', template = 'buddy_add.html')
+@view_GET( r'^buddy/add/$', template = 'buddy_add.html')
 @login_required
 def buddy_add(request, **kw):
+    if not request.user.is_superuser:
+        return {
+            'authorized': False,
+        }
+
+    form = AddBuddyForm()
+
     return {
-        "authorized": request.user.is_superuser,
-    }
+        'form': form,
+        'authorized': 'True'}
+
