@@ -43,10 +43,30 @@
             <tr><th>IRL</th><td>{{ buddy.irl }}</td></tr>
             <tr><th>Comment</th><td>{{ buddy.comment }}</td></tr>
             <tr><th>Account balance</th><td> <a href="{% url 'account_detail' buddy.logic_account.id %}">{{ balance }}</a></td></tr>
-            {% for principal in principals %}
-                <tr><th>{{ principal.type.name }} {{ principal.name }}</th><td>{{ principal.value }}</td></tr>
-
-            {% endfor %}
+            {% if principals.exists %}
+                <tr><th>Principals</th>
+                    <td>
+                        <table class="table table-condensed table-bordered">
+                            <tr>
+                                <th>type</th>
+                                <th>name</th>
+                                <th>since</th>
+                                <th>until</th>
+                                <th>value</th>
+                            </tr>
+                            {% for principal in principals %}
+                                <tr>
+                                    <th>{{ principal.type.name }}</th>
+                                    <th>{{ principal.name }}</th>
+                                    <th>{{ principal.since|date:'Y-m-d' }}</th>
+                                    <th>{{ principal.until|date:'Y-m-d' }}</th>
+                                    <th>{{ principal.value }}</th>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    </td>
+                </tr>
+            {%endif%}
             {% if events.exists %}
                 <tr><th>Events</th>
                     <td>
