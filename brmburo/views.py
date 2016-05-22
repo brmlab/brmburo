@@ -340,13 +340,12 @@ def buddy_add_new(request, forms, **kw):
             type = LogicAccountType.objects.get(symbol="credit")
         )
         buddy.logic_account = logic_account
-        # This breaks on InternalError when event is created, no fucking idea why - it works from manage.py shell
-        # event_type = BuddyEventType.objects.get(symbol="start")
-        # event = BuddyEvent.objects.create(
-        #     buddy=buddy,
-        #     type=event_type,
-        #     date=datetime.date.today(),
-        #     reason="Buddy %s created" % buddy.nickname,
-        # )
     buddy.save()
+    event_type = BuddyEventType.objects.get(symbol="start")
+    event = BuddyEvent.objects.create(
+        buddy=buddy,
+        type=event_type,
+        date=datetime.date.today(),
+        reason="Buddy %s created" % buddy.nickname,
+    )
     messages.success(request, 'Buddy addition was successful.')
