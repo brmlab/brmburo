@@ -341,11 +341,12 @@ def buddy_add_new(request, forms, **kw):
         )
         buddy.logic_account = logic_account
     buddy.save()
-    event_type = BuddyEventType.objects.get(symbol="start")
-    event = BuddyEvent.objects.create(
-        buddy=buddy,
-        type=event_type,
-        date=datetime.date.today(),
-        reason="Buddy %s created" % buddy.nickname,
-    )
+    if buddy.type == BuddyType.objects.get(symbol="member"):
+        event_type = BuddyEventType.objects.get(symbol="start")
+        event = BuddyEvent.objects.create(
+            buddy=buddy,
+            type=event_type,
+            date=datetime.date.today(),
+            reason="Buddy %s created" % buddy.nickname,
+        )
     messages.success(request, 'Buddy addition was successful.')
