@@ -47,13 +47,14 @@ class DokuwikiAuthBackend(ModelBackend):
                                 if user.is_superuser or user.is_staff:
                                     return super(DokuwikiAuthBackend,self).authenticate(username, password, **kw)
 
+                                # update user
                                 user.email = email
                                 # user invalidation
                                 if not is_member:
                                     user.is_superuser = False
                                     user.is_staff = False
                                 user.save()
-                                # TODO we could update email here if it changed, but it's not used for anything
+
                             except User.DoesNotExist:
                                 if is_member:
                                     try:
