@@ -18,6 +18,11 @@
         <h3>You are not authorized to view full roster.</h3>
     {% else %}
         <h3>Roster</h3>
+
+        <form action="/buddy/add/">
+            <button class=" btn btn-info">Add new buddy</button>
+        </form>
+
         <table class="table table-hover" style="display: table">
             <tr>
                 <th>uid</th>
