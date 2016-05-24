@@ -317,36 +317,20 @@ def buddy_add(request, **kw):
 def buddy_add_new(request, forms, **kw):
     if not request.user.is_superuser:
         return
-
+    
     form = AddBuddyForm(request.POST.copy())
-
+    
     # make just year also accepted in "born" field
     m = re.match(r"^\d{4}$", form.data["born"])
     if m:
         form.data["born"] = m.group(0) + "-01-01"
-
+    
     if not form.is_valid():
         messages.error(request, 'Buddy addition was rejected because form was invalid. Required are: UID, nick, buddy type.')
         return
-
+    
     buddy = form.save(commit=False)
     # automatically create logic account and start buddy event for member
-    # this will raise exception if buddy type with symbol "member" or buddy event type "start" does not exist yet
-    if buddy.type == BuddyType.objects.get(symbol="member"):
-        logic_account = LogicAccount.objects.create(
-            name = "Payments from %s %s" % (buddy.first_name, buddy.surname),
-            symbol = "@%s" % buddy.nickname,
-            currency = Currency.objects.get(symbol="CZK"),
-            type = LogicAccountType.objects.get(symbol="credit")
-        )
-        buddy.logic_account = logic_account
-    buddy.save()
-    if buddy.type == BuddyType.objects.get(symbol="member"):
-        event_type = BuddyEventType.objects.get(symbol="start")
-        event = BuddyEvent.objects.create(
-            buddy=buddy,
-            type=event_type,
-            date=datetime.date.today(),
-            reason="Buddy %s created" % buddy.nickname,
-        )
-    messages.success(request, 'Buddy addition was successful.')
+    
+    buddy_after_create(buddy)
+
