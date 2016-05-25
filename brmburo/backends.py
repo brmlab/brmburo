@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 class DokuwikiAuthBackend(ModelBackend):
 
-    AuthStruct = namedtuple('MyStruct', ('login', 'hash', 'email', 'roles', 'is_member', 'is_council', 'is_admin'))
+    AuthStruct = namedtuple('AuthStruct', ('login', 'hash', 'email', 'roles', 'is_member', 'is_council', 'is_admin'))
 
     def _load_docuwiki_authfile(self):
         try:
