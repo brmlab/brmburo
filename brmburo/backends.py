@@ -52,11 +52,8 @@ class DokuwikiAuthBackend(ModelBackend):
 
         for auth in self._load_docuwiki_authfile():
 
-            if auth.login != username:  # skip username mismatch
-                continue
-
             try:
-                if md5_crypt.verify(password, auth.hash):
+                if auth.login == username and md5_crypt.verify(password, auth.hash):
                     try:
                         user = User.objects.get(username=username)
 
@@ -87,7 +84,7 @@ class DokuwikiAuthBackend(ModelBackend):
 
                     return user
 
-            except ValueError:
+            except ValueError:  # md5_crypt - invalid hash format
                 logging.exception("Cannot verify user")
                 continue
 
