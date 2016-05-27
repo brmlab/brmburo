@@ -5,9 +5,13 @@ from django.contrib.auth.backends import ModelBackend
 from models import Buddy
 
 from django.contrib.auth.models import User
-from .settings.local import DOKUWIKI_USERS_FILE
 
 from collections import namedtuple
+
+try:
+    from .settings import DOKUWIKI_USERS_FILE
+except ImportError:
+    DOKUWIKI_USERS_FILE = None
 
 logger = logging.getLogger(__name__)
 
