@@ -18,12 +18,19 @@
 {% block content %}
     <h3>Add new buddy</h3>
 
-    <form method="POST" class="post-form" action="{% url 'buddy_add_new' %}">
-        {% csrf_token %}
-        {% bootstrap_form forms.add_buddy %}
-        <button type="submit" class="save btn btn-primary">Save</button>
+    <form method="POST" action="{% url 'buddy_add_new' %}" class="form-horizontal">
+
+
+        <fieldset>
+            {% csrf_token %}
+            {{ forms.add_buddy|as_bootstrap:'horizontal,float' }}
+            <button type="submit" class="save btn btn-primary">Save</button>
+
+        </fieldset>
+
 
     </form>
+
 {% endblock %}
 
 {% block javascript %}

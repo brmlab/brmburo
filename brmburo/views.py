@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
 from django.contrib.auth import REDIRECT_FIELD_NAME
 
-from brmburo.models import LogicTransaction, LogicTransactionSplit, LogicAccount, SecurityPrincipal, Buddy, BuddyEvent, BankTransaction
+from brmburo.models import LogicTransaction, LogicTransactionSplit, LogicAccount, SecurityPrincipal, Buddy, BuddyEvent, BankTransaction, BuddyType, LogicAccountType, BuddyEventType, PrincipalType
 from .transactions import account_sum
 from .buddies import buddy_for_logic_account, after_create_buddy
 from .helpers import view_POST, view_GET, combine, NotAuthorizedException, superuser_required, paginate
@@ -73,7 +73,11 @@ def logout(request, forms):
 @view_GET( r'^roster$', template = 'roster.html')
 @login_required
 def roster(request, **kw):
-    from models import Buddy
+    type = request.GET.get('type')
+    try:
+        BuddyType.objects.get(symbol=type)
+    except BuddyType.DoesNotExist:
+        type = 'member'
 
     # only superuser can view full roster (it contains balances etc.)
     # redirect user if his username matches logged in user (authorization for roster detail is done in that view)
@@ -84,12 +88,18 @@ def roster(request, **kw):
         except Buddy.DoesNotExist:
             raise NotAuthorizedException('Superuser required.')
 
+    types = {}
+    for t in BuddyType.objects.all():
+        types[t.symbol] = (t,Buddy.objects.filter(type=t).count())
+
     return {
         'users': paginate(
-            Buddy.objects.all().order_by('nickname'),
+            Buddy.objects.filter(type__symbol=type).order_by('nickname'),
             request.GET.get('page'),
             lambda buddy: (buddy,account_sum(buddy))
-        )
+        ),
+        'type': type,
+        'types': types,
     }
 
 
@@ -97,13 +107,24 @@ def roster(request, **kw):
 @login_required
 @superuser_required
 def account_list(request, **kw):
+    type = request.GET.get('type')
+    try:
+        LogicAccountType.objects.get(symbol=type)
+    except LogicAccountType.DoesNotExist:
+        type = 'credit'
+
+    types = {}
+    for t in LogicAccountType.objects.all():
+        types[t.symbol] = (t,LogicAccount.objects.filter(type=t).count())
 
     return {
         'accounts': paginate(
-            LogicAccount.objects.all(),
+            LogicAccount.objects.filter(type__symbol=type),
             request.GET.get('page'),
             lambda account: (account,account_sum(account),buddy_for_logic_account(account))
-        )
+        ),
+        'type': type,
+        'types': types,
     }
 
 
@@ -187,9 +208,22 @@ def roster_user(request, uid, **kw):
     history = []
 
     for event in BuddyEvent.objects.filter(buddy=buddy).order_by('date'):
-        history.append(dict(date=event.date,type=event.type.name,reason=event.reason,color='success'))
+        history.append(dict(
+            date=event.date,
+            type=event.type.name,
+            reason=event.reason,
+            color='success',
+            id=event.id,
+            target='',
+        ))
         if event.until:
-            history.append(dict(date=event.until,type=event.type.name,reason='END of %s %s' % (event.type.name, event.reason),color='error'))
+            history.append(dict(
+                date=event.until,
+                type=event.type.name,
+                reason='END of %s %s' % (event.type.name, event.reason),
+                color='error',
+                target='',
+            ))
 
     for split in LogicTransactionSplit.objects.filter(account=buddy.logic_account):
         history.append(dict(
@@ -198,7 +232,9 @@ def roster_user(request, uid, **kw):
             amount=split.amount_,
             currency=split.account.currency.symbol,
             reason=split.transaction.comment,
-            color='warning' if split.side < 0 else 'info'
+            color='warning' if split.side < 0 else 'info',
+            id=split.transaction.id,
+            target='transaction_detail',
         ))
 
     return {
@@ -208,6 +244,8 @@ def roster_user(request, uid, **kw):
         'history': sorted(history, key=lambda h: h.get('date')),
         'principals': SecurityPrincipal.objects.filter(buddy=buddy).order_by('since'),
         'can_edit': request.user.is_superuser,
+        'event_types': BuddyEventType.objects.all().order_by('name'),
+        'principal_types': PrincipalType.objects.all().order_by('name'),
         }
 
 

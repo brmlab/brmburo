@@ -15,6 +15,18 @@
 {% block content %}
     <h3>Accounts</h3>
 
+    <ul class="nav nav-tabs">
+        {% for t,count in types.values %}
+            <li class="{% if t.symbol == type %}active{% endif %}">
+                <a href="{% if t.symbol != type %}{% url 'account_list' %}?type={{t.symbol}}{% else %}#{% endif %}">
+                    {{t.name}}
+                    &nbsp;
+                    <span class="badge badge-info pull-right">{{ count }}</span>
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+
     <div class="container-fluid">
         <div class="row-fluid">
             <div class="span2">
@@ -29,16 +41,15 @@
 
     <table class="table table-hover" style="display: table">
         <tr>
-            <th>id</th>
             <th>symbol</th>
             <th>balance</th>
             <th>currency</th>
             <th>type</th>
             <th>name</th>
+            <th></th>
         </tr>
         {% for account,balance,buddy in accounts %}
             <tr>
-                <td><a href="{% url 'account_detail' account.id %}">#{{ account.id }}</a></td>
                 <td>
                     {% if buddy %}<a href="{% url 'roster_user' buddy.uid %}">@{{ buddy.nickname }}</a>{% else %}{{ account.symbol }}{% endif %}
                 </td>
@@ -46,6 +57,7 @@
                 <td>{{ account.currency.symbol }}</td>
                 <td>{{ account.type.name }}</td>
                 <td>{{ account.name }}</td>
+                <td><a href="{% url 'account_detail' account.id %}" class="btn btn-mini btn-inverse"><i class="icon-arrow-right icon-white"></i></a></td>
             </tr>
         {% endfor %}
     </table>

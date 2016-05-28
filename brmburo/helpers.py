@@ -17,7 +17,7 @@ from functional import partial
 try:
     from .settings import ITEMS_PER_PAGE
 except ImportError:
-    ITEMS_PER_PAGE = 15
+    ITEMS_PER_PAGE = 25
 
 _HTTP_METHODS = ('get','post', 'option', 'put', 'delete', 'head')
 

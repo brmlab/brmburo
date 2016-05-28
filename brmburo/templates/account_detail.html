@@ -34,16 +34,24 @@
                             <th>date</th>
                             <th>amount</th>
                             <th>currency</th>
-                            <th>transaction</th>
                             <th>comment</th>
+                            <th></th>
                         </tr>
                         {% for split in splits %}
                             <tr class={% if split.side < 0 %}warning{% else %}info{% endif %}>
                                 <td>{{ split.transaction.time|date:'Y-m-d' }}</td>
                                 <td>{{ split.amount_ }}</td>
                                 <td>{{ split.account.currency.symbol }}</td>
-                                <td><a href="{% url 'transaction_detail' split.transaction.id %}">#{{ split.transaction.id }}</a></td>
                                 <td><i>{% if split.comment %}{{ split.comment }}{% else %}{{ split.transaction.comment }}{% endif %}</i></td>
+                                <td>
+                                    <div class="btn-group pull-right">
+                                        <a href="{% url 'transaction_detail' split.transaction.id %}"
+                                           title="Go to transaction detail"
+                                           class="btn btn-mini btn-inverse">
+                                            <i class="icon-arrow-right icon-white"></i>
+                                        </a>
+                                    </div>
+                                </td>
                             </tr>
                         {% endfor %}
                     </table>

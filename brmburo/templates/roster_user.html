@@ -19,18 +19,12 @@
         <h3>No such uid: {{ uid }}.</h3>
     {% else %}
         <h3>Buddy details</h3>
+
         <table class="table table-hover">
             <tr><th>UID</th><td>{{ buddy.uid }}</td></tr>
             <tr><th>Type</th>
                 <td>
                     {{ buddy.type.name }}
-                    {% if can_edit %}
-                        <div class="btn-group pull-right">
-                            <button class=" btn btn-info">Discount</button>
-                            <button class=" btn btn-warning">Suspend</button>
-                            <button class=" btn btn-danger">Terminate</button>
-                        </div>
-                    {% endif %}
                 </td>
             </tr>
             <tr><th>Nick</th><td>{{ buddy.nickname }}</td></tr>
@@ -40,7 +34,15 @@
             <tr><th>Born</th><td>{{ buddy.born|date:"Y" }}</td></tr>
             <tr><th>IRL</th><td>{{ buddy.irl }}</td></tr>
             <tr><th>Comment</th><td>{{ buddy.comment }}</td></tr>
-            <tr><th>Account balance</th><td> <a href="{% url 'account_detail' buddy.logic_account.id %}">{{ balance }}</a></td></tr>
+            <tr><th>Account balance</th>
+                <td>
+                    {% if can_edit %}
+                        <a href="{% url 'account_detail' buddy.logic_account.id %}">{{ balance }}</a>
+                    {%else%}
+                        {{ balance }}
+                    {%endif%}
+                </td>
+            </tr>
             {% if principals.exists %}
                 <tr><th>Principals</th>
                     <td>
@@ -51,14 +53,39 @@
                                 <th>since</th>
                                 <th>until</th>
                                 <th>value</th>
+                                <th>
+                                    {% if can_edit %}
+
+                                        <div class="btn-group pull-right">
+                                            <button href="#" title="Add principal" class="btn btn-mini btn-primary dropdown-toggle" data-toggle="dropdown">
+                                                <i class="icon-plus icon-white"></i>
+                                                <span class="caret"></span>
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                {% for discount in principal_types %}
+                                                    <li><a href="#">{{discount.name}}</a> </li>
+                                                {%endfor%}
+                                            </ul>
+                                        </div>
+
+                                    {%endif%}
+                                </th>
                             </tr>
                             {% for principal in principals %}
                                 <tr>
-                                    <th>{{ principal.type.name }}</th>
-                                    <th>{{ principal.name }}</th>
-                                    <th>{{ principal.since|date:'Y-m-d' }}</th>
-                                    <th>{{ principal.until|date:'Y-m-d' }}</th>
-                                    <th>{{ principal.value }}</th>
+                                    <td>{{ principal.type.name }}</td>
+                                    <td>{{ principal.name }}</td>
+                                    <td>{{ principal.since|date:'Y-m-d' }}</td>
+                                    <td>{{ principal.until|date:'Y-m-d' }}</td>
+                                    <td>{{ principal.value }}</td>
+                                    <td>
+                                        {% if can_edit %}
+
+                                            <div class="btn-group pull-right">
+                                                <a href="#" title="Edit principal" class="btn btn-mini btn-primary"><i class="icon-edit icon-white"></i> </a>
+                                            </div>
+                                        {%endif%}
+                                    </td>
                                 </tr>
                             {% endfor %}
                         </table>
@@ -75,6 +102,22 @@
                                 <th>amount</th>
                                 <th>currency</th>
                                 <th>comment</th>
+                                <th>
+                                    {% if can_edit %}
+
+                                        <div class="btn-group pull-right">
+                                            <button href="#" title="Add event" class="btn btn-mini btn-primary dropdown-toggle" data-toggle="dropdown">
+                                                <i class="icon-plus icon-white"></i>
+                                                <span class="caret"></span>
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                {% for discount in event_types %}
+                                                    <li><a href="#">{{discount.name}}</a> </li>
+                                                {%endfor%}
+                                            </ul>
+                                        </div>
+                                    {%endif%}
+                                </th>
                             </tr>
 
                             {% for event in history %}
@@ -84,6 +127,19 @@
                                     <td>{{ event.amount }}</td>
                                     <td>{{ event.currency }}</td>
                                     <td>{% if event.reason %} {{ event.reason }} {% endif %}</td>
+                                    <td>
+                                        {% if event.id %}
+                                            {% if can_edit %}
+                                                <div class="btn-group pull-right">
+                                                    <a href="{%if event.target%}{% url event.target event.id %}{%endif%}"
+                                                       title="{%if event.target == 'transaction_detail'%}Go to transaction detail{%else%}Edit event{%endif%}"
+                                                       class="btn btn-mini {%if event.target == 'transaction_detail'%}btn-inverse{%else%}btn-primary{%endif%}">
+                                                        <i class="{%if event.target == 'transaction_detail'%}icon-arrow-right{%else%}icon-edit{%endif%} icon-white"></i>
+                                                    </a>
+                                                </div>
+                                            {%endif%}
+                                        {%endif%}
+                                    </td>
                                 </tr>
                             {% endfor %}
                         </table>

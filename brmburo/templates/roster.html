@@ -16,11 +16,23 @@
 {% block content %}
     <h3>Roster</h3>
 
+    <ul class="nav nav-tabs">
+        {% for t,count in types.values %}
+            <li class="{% if t.symbol == type %}active{% endif %}">
+                <a href="{% if t.symbol != type %}{% url 'roster' %}?type={{t.symbol}}{% else %}#{% endif %}">
+                    {{t.name}}
+                    &nbsp;
+                    <span class="badge badge-info pull-right">{{ count }}</span>
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+
     <div class="container-fluid">
         <div class="row-fluid">
             <div class="span2">
                 <div class="btn-toolbar">
-                    <a class=" btn btn-primary" title="Add new buddy" href="{% url 'buddy_add' %}"><i class="icon-plus icon-white"></i></a>
+                    <a class=" btn btn-primary btn-mini" title="Add new buddy" href="{% url 'buddy_add' %}"><i class="icon-plus icon-white"></i></a>
                 </div>
             </div>
             <div class="span10">

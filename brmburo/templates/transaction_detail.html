@@ -20,11 +20,9 @@
             <div class="span2">
                 <div class="btn-toolbar">
                     <div class='btn-group'>
-                        {% if not bank_transaction %}
-                            <a href='#' class='btn btn-primary' title="Add split"><i class="icon-white icon-plus"></i> </a>
-                            <a href='#' class='btn btn-danger' title="Delete transaction"><i class="icon-white icon-remove"></i> </a>
-                        {% else %}
-                            <a href='#' class='btn btn-danger' title="Unpair transaction"><i class="icon-white icon-remove"></i> </a>
+                        <a href='#' class='btn btn-primary btn-mini' title="Edit transaction"><i class="icon-white icon-edit"></i> </a>
+                        {% if bank_transaction %}
+                            <a href='#' class='btn btn-danger btn-mini' title="Unpair transaction"><i class="icon-white icon-remove"></i> </a>
                         {%endif%}
                     </div>
                 </div>
@@ -50,7 +48,6 @@
                             <th>currency</th>
                             <th>account</th>
                             <th>comment</th>
-                            {% if not bank_transaction %}<th>actions</th>{%endif%}
                         </tr>
                         {% for split in splits %}
                             <tr class={% if split.side < 0 %}warning{% else %}info{% endif %}>
@@ -60,14 +57,6 @@
                                 <td>{{ split.account.currency.symbol }}</td>
                                 <td><a href="{% url 'account_detail' split.account.id %}">{{ split.account.symbol }}</a></td>
                                 <td>{% if split.comment %}<i>{{ split.comment }}</i>{% endif %}</td>
-                                {% if not bank_transaction %}
-                                    <td>
-                                        <div class='btn-group'>
-                                            <a href='#' class='btn btn-mini btn-primary' title="Edit split"><i class="icon-white icon-edit"></i> </a>
-                                            <a href='#' class='btn btn-mini btn-danger' title="Delete split"><i class="icon-white icon-remove"></i> </a>
-                                        </div>
-                                    </td>
-                                {%endif%}
                             </tr>
                         {% endfor %}
                     </table>
