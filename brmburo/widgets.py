@@ -2,8 +2,10 @@
 __author__ = 'pborky'
 
 from bootstrap_toolkit.widgets import add_to_css_class
-from django.forms import TextInput
+from django.forms import TextInput, ModelForm
+from django.forms.models import ModelFormMetaclass
 from django.utils.safestring import mark_safe
+
 
 class FormfieldCallback(object):
     def __init__(self, meta=None, **kwargs):
@@ -25,12 +27,33 @@ class FormfieldCallback(object):
             pass #field.choices = queryset_transform(field.choices)
         return field.formfield(**kwargs)
 
+
+class RichModelFormMetaclass(ModelFormMetaclass):
+    def __new__(mcs, name, bases, attrs):
+        Meta = attrs.get('Meta', None)
+        attributes = getattr(Meta, 'attrs', {}) if Meta else {}
+
+        if not attrs.has_key('formfield_callback'):
+            attrs['formfield_callback'] = FormfieldCallback(**attributes)
+        new_class = super(RichModelFormMetaclass, mcs).__new__(mcs, name, bases, attrs)
+        return new_class
+
+
+class ModelForm(ModelForm):
+
+    __metaclass__ = RichModelFormMetaclass
+
+    def __init__ (self, *args, **kwargs):
+        self._request = kwargs.pop('request', None)
+        super(ModelForm,self).__init__ (*args, **kwargs)
+
+
 class Uneditable(TextInput):
     def __init__(self, value_calback=None, choices=(), *args,  **kwargs):
         super(Uneditable, self).__init__(*args, **kwargs)
         self.value_calback = value_calback
         self.choices = list(choices)
-        self.attrs['disabled'] = True
+        #self.attrs['disabled'] = True
 
     def render(self, name, value, attrs=None):
         if attrs is None:
