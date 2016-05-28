@@ -53,8 +53,8 @@
                                 <th>since</th>
                                 <th>until</th>
                                 <th>value</th>
-                                <th>
-                                    {% if can_edit %}
+                                {% if can_edit %}
+                                    <th>
 
                                         <div class="btn-group pull-right">
                                             <button href="#" title="Add principal" class="btn btn-mini btn-primary dropdown-toggle" data-toggle="dropdown">
@@ -68,8 +68,8 @@
                                             </ul>
                                         </div>
 
-                                    {%endif%}
-                                </th>
+                                    </th>
+                                {%endif%}
                             </tr>
                             {% for principal in principals %}
                                 <tr>
@@ -78,19 +78,39 @@
                                     <td>{{ principal.since|date:'Y-m-d' }}</td>
                                     <td>{{ principal.until|date:'Y-m-d' }}</td>
                                     <td>{{ principal.value }}</td>
-                                    <td>
-                                        {% if can_edit %}
+                                    {% if can_edit %}
+                                        <td>
 
                                             <div class="btn-group pull-right">
                                                 <a href="#" title="Edit principal" class="btn btn-mini btn-primary"><i class="icon-edit icon-white"></i> </a>
                                             </div>
-                                        {%endif%}
-                                    </td>
+                                        </td>
+
+                                    {%endif%}
                                 </tr>
                             {% endfor %}
                         </table>
                     </td>
                 </tr>
+            {%else%}
+                {% if can_edit %}
+                    <tr><th>Principals</th>
+                    <td>
+
+                            <div class="btn-group pull-right">
+                                <button href="#" title="Add principal" class="btn btn-mini btn-primary dropdown-toggle" data-toggle="dropdown">
+                                    <i class="icon-plus icon-white"></i>
+                                    <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    {% for discount in principal_types %}
+                                        <li><a href="#">{{discount.name}}</a> </li>
+                                    {%endfor%}
+                                </ul>
+                            </div>
+
+                    </td>
+                {%endif%}
             {%endif%}
             {% if events.exists %}
                 <tr><th>Events</th>
@@ -102,8 +122,8 @@
                                 <th>amount</th>
                                 <th>currency</th>
                                 <th>comment</th>
+                                {% if can_edit %}
                                 <th>
-                                    {% if can_edit %}
 
                                         <div class="btn-group pull-right">
                                             <button href="#" title="Add event" class="btn btn-mini btn-primary dropdown-toggle" data-toggle="dropdown">
@@ -116,8 +136,8 @@
                                                 {%endfor%}
                                             </ul>
                                         </div>
-                                    {%endif%}
-                                </th>
+                                    </th>
+                                {%endif%}
                             </tr>
 
                             {% for event in history %}
@@ -127,9 +147,9 @@
                                     <td>{{ event.amount }}</td>
                                     <td>{{ event.currency }}</td>
                                     <td>{% if event.reason %} {{ event.reason }} {% endif %}</td>
-                                    <td>
-                                        {% if event.id %}
-                                            {% if can_edit %}
+                                    {% if can_edit %}
+                                        <td>
+                                            {% if event.id %}
                                                 <div class="btn-group pull-right">
                                                     <a href="{%if event.target%}{% url event.target event.id %}{%endif%}"
                                                        title="{%if event.target == 'transaction_detail'%}Go to transaction detail{%else%}Edit event{%endif%}"
@@ -138,8 +158,8 @@
                                                     </a>
                                                 </div>
                                             {%endif%}
-                                        {%endif%}
-                                    </td>
+                                        </td>
+                                    {%endif%}
                                 </tr>
                             {% endfor %}
                         </table>
