@@ -14,35 +14,51 @@
 {% endblock %}
 
 {% block content %}
-    {% if not authorized %}
-        <h3>You are not authorized to view full roster.</h3>
-    {% else %}
-        <h3>Roster</h3>
+    <h3>Roster</h3>
 
-        <form action="/buddy/add/">
-            <button class=" btn btn-info">Add new buddy</button>
-        </form>
-
-        <table class="table table-hover" style="display: table">
+    <div class="container-fluid">
+        <div class="row-fluid">
+            <div class="span2">
+                <div class="btn-toolbar">
+                    <a class=" btn btn-primary" title="Add new buddy" href="{% url 'buddy_add' %}"><i class="icon-plus icon-white"></i></a>
+                </div>
+            </div>
+            <div class="span10">
+                {% include "paginator.html" with page=users %}
+            </div>
+        </div>
+    </div>
+    <table class="table table-hover" style="display: table">
+        <tr>
+            <th>uid</th>
+            <th>nick</th>
+            <th>balance</th>
+            <th>type</th>
+            <th>name</th>
+        </tr>
+        {% for user,balance in users %}
             <tr>
-                <th>uid</th>
-                <th>nick</th>
-                <th>balance</th>
-                <th>type</th>
-                <th>name</th>
+                <td><a href="{% url 'roster_user' user.uid %}">{{ user.uid }}</a></td>
+                <td>{{ user.nickname }}</td>
+                <td><a href="{% url 'account_detail' user.logic_account.id %}">{{ balance }}</a></td>
+                <td>{{ user.type.name }}</td>
+                <td>{{ user.first_name }} {{ user.middle_name }} {{ user.surname }}</td>
             </tr>
-            {% for user,balance in users %}
-                <tr>
-                    <td><a href="{% url 'roster_user' user.uid %}">{{ user.uid }}</a></td>
-                    <td>{{ user.nickname }}</td>
-                    <td><a href="{% url 'account_detail' user.logic_account.id %}">{{ balance }}</a></td>
-                    <td>{{ user.type.name }}</td>
-                    <td>{{ user.first_name }} {{ user.middle_name }} {{ user.surname }}</td>
-                </tr>
-            {% endfor %}
+        {% endfor %}
 
-        </table>
-    {% endif %}
+    </table>
+
+    <div class="container-fluid">
+        <div class="row-fluid">
+            <div class="span2">
+                <div class="btn-toolbar">
+                </div>
+            </div>
+            <div class="span10">
+                {% include "paginator.html" with page=users %}
+            </div>
+        </div>
+    </div>
 {% endblock %}
 
 {% block javascript %}

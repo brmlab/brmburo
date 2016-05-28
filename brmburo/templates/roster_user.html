@@ -17,8 +17,6 @@
 {% block content %}
     {% if no_such_uid %}
         <h3>No such uid: {{ uid }}.</h3>
-    {% elif not authorized %}
-        <h3>You are not authorized to view {{ buddy.nickname }}'s details.</h3>
     {% else %}
         <h3>Buddy details</h3>
         <table class="table table-hover">

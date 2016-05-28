@@ -1,18 +1,18 @@
 import re
-import datetime
 import logging
 
 from django.contrib import messages
-from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.views.decorators import cache
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect
+from django.contrib.auth import REDIRECT_FIELD_NAME
 
-from brmburo.models import LogicTransaction, LogicTransactionSplit, LogicAccount, LogicAccountType, SecurityPrincipal, \
-    Buddy, BuddyType, BuddyEvent, BuddyEventType, BankTransaction, Currency
-from brmburo.transactions import account_sum
-from .helpers import view_POST, view_GET, combine
-from .forms import LoginForm, AddBuddyForm, BuddyAdminForm
+from brmburo.models import LogicTransaction, LogicTransactionSplit, LogicAccount, SecurityPrincipal, Buddy, BuddyEvent, BankTransaction
+from .transactions import account_sum
+from .buddies import buddy_for_logic_account, after_create_buddy
+from .helpers import view_POST, view_GET, combine, NotAuthorizedException, superuser_required, paginate
+from .forms import LoginForm, BuddyForm
+
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
     form_cls = {'login':LoginForm,},
     invalid_form_msg = 'Login form invalid.',
     redirect_to = '/',
-    redirect_attr = 'next',
+    redirect_attr = REDIRECT_FIELD_NAME,
     decorators = ( cache.never_cache,  ),
 )
 def do_login(request, forms):
@@ -50,23 +50,25 @@ def do_login(request, forms):
     decorators = ( cache.never_cache,  ),
 )
 def login(request, forms):
-    next = combine(request.GET, request.POST).get('next', '/')
+    next = combine(request.GET, request.POST).get(REDIRECT_FIELD_NAME, '/')
     if request.user and request.user.is_authenticated():
         return redirect(next)
     return {
         'next': next
     }
 
+
 @view_GET(
     r'^logout$',
     redirect_to = '/',
-    redirect_attr = 'next',
+    redirect_attr = REDIRECT_FIELD_NAME,
     decorators = ( cache.never_cache,  ),
 )
 def logout(request, forms):
     from django.contrib.auth import logout
     logout(request)
     messages.success(request, 'User deauthentication successful.')
+
 
 @view_GET( r'^roster$', template = 'roster.html')
 @login_required
@@ -77,64 +79,45 @@ def roster(request, **kw):
     # redirect user if his username matches logged in user (authorization for roster detail is done in that view)
     if not request.user.is_superuser:
         try:
-            buddy = Buddy.objects.get(nickname__iexact=request.user.username)
+            buddy = Buddy.objects.get(user=request.user)
             return redirect("roster_user", uid=buddy.uid)
         except Buddy.DoesNotExist:
-            return {
-                'authorized': False,
-            }
+            raise NotAuthorizedException('Superuser required.')
 
     return {
-        'authorized': True,
-        'users':
-            ((buddy,account_sum(buddy)) for buddy in Buddy.objects.all().order_by('nickname')),
+        'users': paginate(
+            Buddy.objects.all().order_by('nickname'),
+            request.GET.get('page'),
+            lambda buddy: (buddy,account_sum(buddy))
+        )
     }
+
 
 @view_GET( r'^account/list$', template = 'account_list.html')
 @login_required
+@superuser_required
 def account_list(request, **kw):
-    def getbuddy(account):
-        buddy = Buddy.objects.filter(logic_account=account)
-        return buddy[0] if buddy.exists() else None
-
-    # only superuser can view all accounts (they contain balances etc.)
-    if not request.user.is_superuser:
-        return {
-            'authorized': False,
-        }
 
     return {
-        'authorized': True,
-        'accounts': ( (account,account_sum(account),getbuddy(account)) for account in  LogicAccount.objects.all() ),
-        }
+        'accounts': paginate(
+            LogicAccount.objects.all(),
+            request.GET.get('page'),
+            lambda account: (account,account_sum(account),buddy_for_logic_account(account))
+        )
+    }
+
 
 @view_GET( r'^transaction/list$', template = 'transaction_list.html')
 @login_required
+@superuser_required
 def transaction_list(request, **kw):
-    # only superuser can view all transactions
-    if not request.user.is_superuser:
-        return {
-            'authorized': False,
-            }
 
     transactions = LogicTransaction.objects.all()
     bank_transactions = BankTransaction.objects.filter(logic_transaction__isnull=True, ignored=False)
     ignored_bank_transactions = BankTransaction.objects.filter(logic_transaction__isnull=True, ignored=True)
 
-    paginator = Paginator(transactions, 25) # Show 25 transactions per page
-    page = request.GET.get('page')
-    try:
-        results = paginator.page(page)
-    except PageNotAnInteger:
-        # If page is not an integer, deliver first page.
-        results = paginator.page(1)
-    except EmptyPage:
-        # If page is out of range (e.g. 9999), deliver last page of results.
-        results = paginator.page(paginator.num_pages)
-
     return {
-        'authorized': True,
-        'transactions': results,
+        'transactions': paginate(transactions, request.GET.get('page')),
         'counts': {
             'transactions': transactions.count(),
             'bank_transactions': bank_transactions.count(),
@@ -142,48 +125,39 @@ def transaction_list(request, **kw):
             }
         }
 
+
 @view_GET( r'^bank-transaction/list/(?P<category>ignored|new)$', template='bank_transaction_list.html')
 @login_required
+@superuser_required
 def bank_transaction_list(request, category, **kw):
-    # only superuser can view all transactions
-    if not request.user.is_superuser:
-        return {
-            'authorized': False,
-            }
 
     transactions = LogicTransaction.objects.all()
     bank_transactions = BankTransaction.objects.filter(logic_transaction__isnull=True, ignored=False)
     ignored_bank_transactions = BankTransaction.objects.filter(logic_transaction__isnull=True, ignored=True)
 
-    paginator = Paginator(ignored_bank_transactions if category == 'ignored' else bank_transactions, 25) # Show 25 transactions per page
-    page = request.GET.get('page')
-    try:
-        results = paginator.page(page)
-    except PageNotAnInteger:
-        # If page is not an integer, deliver first page.
-        results = paginator.page(1)
-    except EmptyPage:
-        # If page is out of range (e.g. 9999), deliver last page of results.
-        results = paginator.page(paginator.num_pages)
-
     return {
-        'authorized': True,
-        'transactions':  results,
+        'transactions':  paginate(
+            ignored_bank_transactions if category == 'ignored' else bank_transactions,
+            request.GET.get('page')
+        ),
         'ignored': category == 'ignored',
         'counts': {
             'transactions': transactions.count(),
             'bank_transactions': bank_transactions.count(),
             'ignored_bank_transactions': ignored_bank_transactions.count(),
             }
-        }
+    }
 
-@view_POST(r'^bank-transaction/detail/ignore$',
-           form_cls=None,
-           redirect_to=None,
-           redirect_attr='nexturl',
-           decorators=(cache.never_cache,)
+
+@view_POST(
+    r'^bank-transaction/detail/ignore$',
+    form_cls=None,
+    redirect_to=None,
+    redirect_attr='nexturl',
+    decorators=(cache.never_cache,)
 )
 @login_required
+@superuser_required
 def bank_transaction_ignore(request, forms, **kw):
     transaction = BankTransaction.objects.get(id=int(request.POST['id']))
     transaction.ignored = not transaction.ignored
@@ -193,29 +167,22 @@ def bank_transaction_ignore(request, forms, **kw):
     else:
         messages.success(request, 'Transaction #%s moved from ignore list.' % transaction.id)
 
+
 @view_GET( r'^roster/user/(?P<uid>[0-9]*)$', template = 'roster_user.html')
 @login_required
 def roster_user(request, uid, **kw):
     try:
         buddy = Buddy.objects.get(uid=int(uid))
     except Buddy.DoesNotExist:
+        if not request.user.is_superuser:
+            raise NotAuthorizedException('Superuser required.')
         return {
             'no_such_uid': True,
-            'authorized': False,
             'uid': uid,
-        }
+            }
 
-    # Old way - look at user is set in buddy's settings
-    # allow only superuser if buddy has no 'user' field set that would allow anyone to view it
-    # allow only user specified in admin or superuser if 'user' is specified
-    #if not request.user.is_superuser and buddy.nickname.lower() != request.user.username.lower():
-
-    # Less secure way - do not look at buddy's settings, show roster detail if login name and buddy name match
-    if not request.user.is_superuser and (not buddy.user or buddy.user.username != request.user.username):
-        return {
-            'authorized': False,
-            'buddy': buddy,
-        }
+    if not request.user.is_superuser and (not buddy.user or buddy.user != request.user):
+        raise NotAuthorizedException('Superuser or %s required.' % buddy.username)
 
     history = []
 
@@ -235,7 +202,6 @@ def roster_user(request, uid, **kw):
         ))
 
     return {
-        'authorized': True,
         'buddy': buddy,
         'balance': account_sum(buddy),
         'events': BuddyEvent.objects.filter(buddy=buddy).order_by('date'),
@@ -244,19 +210,15 @@ def roster_user(request, uid, **kw):
         'can_edit': request.user.is_superuser,
         }
 
+
 @view_GET( r'^account/detail/(?P<id>[0-9]*)$', template = 'account_detail.html')
 @login_required
+@superuser_required
 def account_detail(request, id, **kw):
-    # only superuser can view account details - it could be more finegrained, but it's like this for now
-    if not request.user.is_superuser:
-        return {
-            'authorized': False,
-        }
 
     account = LogicAccount.objects.get(id=int(id))
     buddy = Buddy.objects.filter(logic_account=account)
     return {
-        'authorized': True,
         'account': account,
         'buddy': buddy[0] if buddy.exists() else None,
         'balance': account_sum(account),
@@ -266,71 +228,70 @@ def account_detail(request, id, **kw):
 
 @view_GET( r'^transaction/detail/(?P<id>[0-9]*)$', template = 'transaction_detail.html')
 @login_required
+@superuser_required
 def transaction_detail(request, id, **kw):
-    # only superuser can view transaction details - it could be more finegrained, but it's like this for now
-    if not request.user.is_superuser:
-        return {
-            'authorized': False,
-            }
+
     transaction = LogicTransaction.objects.get(id=id)
+    try:
+        bank_transaction = BankTransaction.objects.get(logic_transaction=transaction)
+    except BankTransaction.DoesNotExist:
+        bank_transaction = None
+
     return {
-        'authorized': True,
         'transaction': transaction,
+        'bank_transaction': bank_transaction,
         'splits': LogicTransactionSplit.objects.filter(transaction=transaction)
     }
 
+
 @view_GET( r'^bank-transaction/detail/(?P<id>[0-9]*)$', template = 'bank_transaction_detail.html')
 @login_required
+@superuser_required
 def bank_transaction_detail(request, id, **kw):
-    # only superuser can view transaction details - it could be more finegrained, but it's like this for now
-    if not request.user.is_superuser:
-        return {
-            'authorized': False,
-            }
+
     transaction = BankTransaction.objects.get(id=id)
     return {
-        'authorized': True,
         'transaction': transaction,
     }
 
-@view_GET( r'^buddy/add/$', template = 'buddy_add.html', decorators = ( cache.never_cache,  ),)
+
+
+@view_GET(
+    r'^buddy/add/$',
+    template = 'buddy_add.html',
+    decorators = ( cache.never_cache,  ),
+    form_cls = {'add_buddy':BuddyForm,},
+    )
 @login_required
+@superuser_required
 def buddy_add(request, **kw):
-    if not request.user.is_superuser:
-        return {
-            'authorized': False,
-        }
 
-    form = AddBuddyForm({"uid": BuddyAdminForm.get_default_prime()})
+    return {}
 
-    return {
-        'form': form,
-        'authorized': 'True'}
 
-@view_POST(r'^buddy/add/new/$',
-           form_cls=None,
-           redirect_to="/",
-           redirect_attr='nexturl',
-           decorators=(cache.never_cache,)
-           )
+@view_POST(
+    r'^buddy/add/new/$',
+    form_cls={'add_buddy':BuddyForm,},
+    invalid_form_msg='Buddy addition was rejected because form was invalid.',
+    template = 'buddy_add.html',
+    decorators=(cache.never_cache,)
+)
 @login_required
+@superuser_required
 def buddy_add_new(request, forms, **kw):
-    if not request.user.is_superuser:
-        return
-    
-    form = AddBuddyForm(request.POST.copy())
-    
+
+    form = forms['add_buddy']
+
     # make just year also accepted in "born" field
     m = re.match(r"^\d{4}$", form.data["born"])
     if m:
         form.data["born"] = m.group(0) + "-01-01"
-    
+
     if not form.is_valid():
-        messages.error(request, 'Buddy addition was rejected because form was invalid. Required are: UID, nick, buddy type.')
         return
     
     buddy = form.save(commit=False)
     # automatically create logic account and start buddy event for member
-    
-    buddy_after_create(buddy)
+
+    after_create_buddy(buddy)
 

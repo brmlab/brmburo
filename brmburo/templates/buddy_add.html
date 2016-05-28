@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load i18n %}
+{% load bootstrap_toolkit %}
 {% block body_class %}{{ block.super }} home{% endblock %}
 
 
@@ -15,16 +16,14 @@
 {% endblock %}
 
 {% block content %}
-    {% if not authorized %}
-        <h3>You are not authorized to add new buddy.</h3>
-    {% else %}
-        <h3>Add new buddy</h3>
+    <h3>Add new buddy</h3>
 
-        <form method="POST" class="post-form" action="/buddy/add/new/?nexturl=/">{% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" class="save btn btn-default">Save</button>
-        </form>
-    {% endif %}
+    <form method="POST" class="post-form" action="{% url 'buddy_add_new' %}">
+        {% csrf_token %}
+        {% bootstrap_form forms.add_buddy %}
+        <button type="submit" class="save btn btn-primary">Save</button>
+
+    </form>
 {% endblock %}
 
 {% block javascript %}

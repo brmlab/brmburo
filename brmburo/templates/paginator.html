@@ -1,0 +1,26 @@
+
+    {% if page.has_previous or page.has_next %}
+        <div class="pagination pagination-small pagination-right">
+            <ul>
+                {% if page.has_previous %}
+                    <li><a data-toggle="tooltip" title="First" href="?page=1">&lt;&lt;</a></li>
+                    <li><a data-toggle="tooltip" title="Previous" href="?page={{ page.previous_page_number }}">&lt;</a></li>
+                {% else %}
+                    <li class="disabled"><span data-toggle="tooltip" title="First">&lt;&lt;</span></li>
+                    <li class="disabled"><span  data-toggle="tooltip" title="Previous">&lt;</span></li>
+                {% endif %}
+
+                <li class="disabled"><span>Page {{ page.number }} of {{ page.paginator.num_pages }}</span></li>
+
+
+
+                {% if page.has_next %}
+                    <li><a data-toggle="tooltip" title="Next" href="?page={{ page.next_page_number }}">&gt;</a></li>
+                    <li><a data-toggle="tooltip" title="Last" href="?page={{ page.paginator.num_pages }}">&gt;&gt;</a></li>
+                {% else %}
+                    <li class="disabled"><span data-toggle="tooltip" title="Next">&gt;</span></li>
+                    <li class="disabled"><span  data-toggle="tooltip" title="Last">&gt;&gt;</span></li>
+                {% endif %}
+            </ul>
+        </div>
+    {% endif %}
