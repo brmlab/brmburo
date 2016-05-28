@@ -203,7 +203,7 @@ def roster_user(request, uid, **kw):
             }
 
     if not request.user.is_superuser and (not buddy.user or buddy.user != request.user):
-        raise NotAuthorizedException('Superuser or %s required.' % buddy.username)
+        raise NotAuthorizedException('Superuser or %s required.' % buddy.nickname)
 
     history = []
 
