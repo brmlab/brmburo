@@ -7,7 +7,7 @@ import tinymce.urls
 from .helpers import autoregister
 from .views import login,logout,login,do_login, roster, roster_user, account_detail, account_list, transaction_list, \
     transaction_detail, bank_transaction_list, bank_transaction_detail, bank_transaction_ignore, buddy_add, \
-    buddy_add_new
+    buddy_add_new, get_attachment
 from .models import Buddy
 from .forms import BuddyAdmin
 
@@ -36,4 +36,6 @@ urlpatterns = patterns('',
 
     url(r'^admin/', include(admin.site.urls)),
     url(r'^tinymce/', include(tinymce.urls), name='tinymce'),
+    url(r'^media/attachments/', get_attachment)
 )
+

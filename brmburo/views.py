@@ -1,17 +1,23 @@
+import os
+import os.path
 import re
 import logging
+import mimetypes
 
 from django.contrib import messages
 from django.views.decorators import cache
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
 from django.contrib.auth import REDIRECT_FIELD_NAME
+from django.http import HttpResponse, Http404
+from django.core.servers.basehttp import FileWrapper
 
 from brmburo.models import LogicTransaction, LogicTransactionSplit, LogicAccount, SecurityPrincipal, Buddy, BuddyEvent, BankTransaction, BuddyType, LogicAccountType, BuddyEventType, PrincipalType
 from .transactions import account_sum
 from .buddies import buddy_for_logic_account, after_create_buddy
 from .helpers import view_POST, view_GET, combine, NotAuthorizedException, superuser_required, paginate
 from .forms import LoginForm, BuddyForm
+from .settings.local import MEDIA_ROOT, MEDIA_URL
 
 
 logger = logging.getLogger(__name__)
@@ -333,3 +339,20 @@ def buddy_add_new(request, forms, **kw):
 
     after_create_buddy(buddy)
 
+@login_required
+@superuser_required
+def get_attachment(request):
+    last_part = re.sub(r"^/media/attachments/", "", request.path).encode("utf-8")
+    # mucking with normpath is to prevent directory traversal with ../../
+    filename = MEDIA_ROOT + "/attachments/" + os.path.normpath('/' + last_part).lstrip('/')
+
+    try:
+        wrapper = FileWrapper(file(filename))
+
+        mime_type = mimetypes.guess_type(request.path)[0] or "application/octet-stream"
+
+        response = HttpResponse(wrapper, content_type=mime_type)
+        response['Content-Length'] = os.path.getsize(filename)
+        return response
+    except IOError:
+        raise Http404("Path " + request.path + " not found.")
